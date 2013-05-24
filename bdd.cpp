@@ -324,7 +324,7 @@ int Bdd::getVueMax(){
         //test si problème lors de l'envoi de la requete
     }
 
-    int vueMax;
+    int vueMax=0;
     //réponse requête
     while(query->next()){
         vueMax = query->value(0).toInt();

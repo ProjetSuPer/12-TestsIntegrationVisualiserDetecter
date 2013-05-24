@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>800</height>
+    <height>840</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -27,7 +27,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>50</y>
+      <y>60</y>
       <width>800</width>
       <height>610</height>
      </rect>
@@ -39,7 +39,7 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -134,7 +134,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>660</y>
+      <y>670</y>
       <width>801</width>
       <height>111</height>
      </rect>
@@ -242,6 +242,115 @@
     </property>
     <property name="pixmap">
      <pixmap>../ressources/activite_vert.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="addressLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>366</x>
+      <y>30</y>
+      <width>110</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string notr="true">127.0.0.254</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="onPushButton">
+    <property name="geometry">
+     <rect>
+      <x>305</x>
+      <y>1</y>
+      <width>57</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>On</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="portLabel">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>30</y>
+      <width>45</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Port :</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="killAllComPushButton">
+    <property name="geometry">
+     <rect>
+      <x>366</x>
+      <y>1</y>
+      <width>110</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Close all com.</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="portSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>529</x>
+      <y>30</y>
+      <width>133</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>65535</number>
+    </property>
+    <property name="value">
+     <number>43210</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="addressLabel">
+    <property name="geometry">
+     <rect>
+      <x>305</x>
+      <y>30</y>
+      <width>57</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Address :</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="offPushButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>1</y>
+      <width>45</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:red;</string>
+    </property>
+    <property name="text">
+     <string>Off</string>
     </property>
    </widget>
   </widget>

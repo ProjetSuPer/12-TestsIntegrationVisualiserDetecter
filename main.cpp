@@ -2,6 +2,7 @@
 #include <QLabel>
 #include <QTextCodec>
 #include "ihm.h"
+#include "server.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,9 +12,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     qDebug();
 
-    //Server server("192.168.60.100", "2222");
+    Server server("192.168.60.100", "2222");
 
-    Ihm w;
+    Ihm w(&server);
     w.show();
 
     return a.exec();

@@ -6,6 +6,7 @@
 #include "lecteur.h"
 #include "dynamique.h"
 #include "bdd.h"
+#include "server.h"
 
 ////////////////////////////////
 namespace Ui {
@@ -17,7 +18,7 @@ class Ihm : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit Ihm(QWidget *parent = 0);
+    explicit Ihm(Server* server, QWidget *parent = 0);
     ~Ihm();
 
 
@@ -49,7 +50,7 @@ private:
     Dynamique *pDynamique;
     //pointeur sur la classe BDD
     Bdd *pBdd;
-
+    Server* _server;
 
 signals:
     void signalNewLecteur(Lecteur *pLecteur);         //doit disparaitre à l'intégration
@@ -75,6 +76,17 @@ private slots:
     void hommeEnDanger(QString &);
     //perte de réception
     void perteReception(int, int, T_ListeLabel *);
+
+    void addressLineEdit_textEdited(QString);
+    void onPushButton_clicked();
+    void on_killAllComPushButton_clicked();
+
+    void server_switchedOn();
+    void server_switchedOff();
+    void server_switchedOffOnError(QString);
+    void server_addressChanged(QString);
+    void server_portChanged(quint16);
+    void server_newConnection(const ClientConnection&);
 };
 
 #endif // IHM_H
