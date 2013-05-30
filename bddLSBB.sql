@@ -8,7 +8,7 @@ CREATE DATABASE IF NOT EXISTS bdd_super CHARACTER SET 'utf8' COLLATE utf8_bin;
 
 USE bdd_super;
 
-DROP TABLE IF EXISTS lieu;
+#DROP TABLE IF EXISTS lieu;
 
 CREATE TABLE lieu
 (
@@ -20,7 +20,7 @@ CREATE TABLE lieu
 )ENGINE=INNODB;
 
 
-DROP TABLE IF EXISTS lecteur;
+#DROP TABLE IF EXISTS lecteur;
 
 CREATE TABLE lecteur
 (
@@ -35,7 +35,7 @@ CREATE TABLE lecteur
 )ENGINE=INNODB;
 
 
-DROP TABLE IF EXISTS vue;
+#DROP TABLE IF EXISTS vue;
 
 CREATE TABLE vue
 (
@@ -48,7 +48,7 @@ CREATE TABLE vue
 )ENGINE=INNODB;
 
 
-DROP TABLE IF EXISTS representationLieuSurVue;
+#DROP TABLE IF EXISTS representationLieuSurVue;
 
 CREATE TABLE representationLieuSurVue
 (
@@ -66,7 +66,7 @@ CREATE TABLE representationLieuSurVue
 
 )ENGINE=INNODB;
 
-DROP TABLE IF EXISTS personne;
+#DROP TABLE IF EXISTS personne;
 
 CREATE TABLE personne
 (
@@ -82,7 +82,7 @@ CREATE TABLE personne
 
 )ENGINE=INNODB;
 
-DROP TABLE IF EXISTS badge;
+#DROP TABLE IF EXISTS badge;
 
 CREATE TABLE badge
 (
@@ -97,7 +97,7 @@ CREATE TABLE badge
 
 )ENGINE=INNODB;
 
-DROP TABLE IF EXISTS zone;
+#DROP TABLE IF EXISTS zone;
 
 CREATE TABLE zone
 (
@@ -110,6 +110,8 @@ CREATE TABLE zone
 
 )ENGINE=INNODB;
 
+#DROP TABLE IF EXISTS log;
+
 CREATE TABLE log
 (
    num_badge	INT UNSIGNED	NOT NULL,
@@ -119,6 +121,8 @@ CREATE TABLE log
    PRIMARY KEY (dateLog, num_badge)
 
 )ENGINE=INNODB;
+
+#DROP TABLE IF EXISTS super;
 
 CREATE TABLE super
 (
