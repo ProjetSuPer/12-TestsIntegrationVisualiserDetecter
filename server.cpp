@@ -1,5 +1,4 @@
 #include "server.h"
-#include "clientmanager.h"
 #include <QThread>
 #include "thread.h"
 
