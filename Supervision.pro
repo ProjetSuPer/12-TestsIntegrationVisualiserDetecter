@@ -18,10 +18,10 @@ SOURCES += main.cpp \
     tcpsocket.cpp \
     clientconnection.cpp \
     reader.cpp \
-    lecteur.cpp \
     contenuonglet.cpp \
     bdd.cpp \
-    dynamique.cpp
+    dynamique.cpp \
+    affichealarme.cpp
 HEADERS  += ihm.h \
     server.h \
     tcpserver.h \
@@ -29,10 +29,10 @@ HEADERS  += ihm.h \
     tcpsocket.h \
     clientconnection.h \
     reader.h \
-    lecteur.h \
     contenuonglet.h \
     dynamique.h \
     bdd.h \
-    bddConfig.h
+    bddConfig.h \
+    affichealarme.h
 
 FORMS    += ihm.ui
