@@ -167,8 +167,8 @@ INSERT INTO lieu (num_lieu, legende) VALUE
 
 
 INSERT INTO lecteur (num_lecteur, num_lieu, ip, estConnecte) VALUE
-  (1, 1, '192.168.0.1', 0),
-  (2, 2, '192.168.0.2', 0),
+  (1, 1, '192.168.60.101', 0),
+  (2, 2, '192.168.60.102', 0),
   (3, 3, '192.168.0.3', 0);
 
 
