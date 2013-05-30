@@ -1,0 +1,21 @@
+# Ignorer les fichiers inutiles de bouml
+*.session
+*.lock
+
+# Ignorer la configuration personnelle de QT
+*.pro.user*
+
+# Ignorer les fichiers de compilations de QT
+Makefile
+*.o
+moc_*
+ui_*
+
+# Ignorer les fichiers configs de Dolphin
+.directory
+
+# Ignorer les sauvegardes de Vim
+*.swp
+
+# Ignorer l'executable de ce projet
+Supervision
