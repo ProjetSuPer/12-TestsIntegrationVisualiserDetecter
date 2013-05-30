@@ -172,8 +172,8 @@ INSERT INTO lecteur (num_lecteur, num_lieu, ip, estConnecte) VALUES
   (3, 3, '192.168.0.3', 0);
 
 INSERT INTO vue (num_vue, legende, image) VALUES
-  (1, "Vue globale", "../ressources/vue_generale.jpg"),
-  (2, "Vue zoomant de l'entree aux dependances", "../ressources/vue_lieu_1-2-3.jpg");
+  (1, "Vue globale", "ressources/vue_generale.jpg"),
+  (2, "Vue zoomant de l'entree aux dependances", "ressources/vue_lieu_1-2-3.jpg");
 
 INSERT INTO representationLieuSurVue (num_vue, num_lieu, num_zone, x, y, xA, yA, xB, yB) VALUES
   (1, 1, 1, 580, 472, 570, 530, 0, 0),
@@ -187,7 +187,7 @@ INSERT INTO representationLieuSurVue (num_vue, num_lieu, num_zone, x, y, xA, yA,
 
 
 INSERT INTO personne (nom, prenom, societe, dateDebut, dateFin, num_pers, photo) VALUES
-  ('scherer', 'nicolas', 'LAB', '0000-00-00', '0000-00-00', 1, '../ressources/supprimer.png'),
+  ('scherer', 'nicolas', 'LAB', '0000-00-00', '0000-00-00', 1, 'ressources/supprimer.png'),
   ('dada', 'dodo', 'didi', '2013-05-01', '2013-05-29', 2, '');
 
 
