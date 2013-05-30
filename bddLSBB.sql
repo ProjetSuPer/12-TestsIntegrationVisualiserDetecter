@@ -70,12 +70,12 @@ CREATE TABLE representationLieuSurVue
 
 CREATE TABLE personne
 (
+   num_pers	INT UNSIGNED 	NOT NULL,
    nom		VARCHAR(50)	NOT NULL,
    prenom	VARCHAR(50)	NOT NULL,
    societe	VARCHAR(50)	NOT NULL,
    dateDebut	DATE		NOT NULL,
    dateFin	DATE		NOT NULL,
-   num_pers	INT UNSIGNED 	NOT NULL,
    photo	VARCHAR(100)	NOT NULL,
 
    PRIMARY KEY (num_pers)
@@ -160,24 +160,22 @@ alter table representationLieuSurVue add constraint fk_representationLieuSurVue_
       references lieu (num_lieu) on delete cascade on update cascade;
 
 
-INSERT INTO lieu (num_lieu, legende) VALUE
+INSERT INTO lieu (num_lieu, legende) VALUES
   (1, "Entree tunnel zone 1"),
   (2, "Angle tunnel zone 2"),
   (3, "Dans tunnel zone 3, en face des dependances");
 
 
-INSERT INTO lecteur (num_lecteur, num_lieu, ip, estConnecte) VALUE
+INSERT INTO lecteur (num_lecteur, num_lieu, ip, estConnecte) VALUES
   (1, 1, '192.168.60.101', 0),
   (2, 2, '192.168.60.102', 0),
   (3, 3, '192.168.0.3', 0);
 
-
-INSERT INTO vue (num_vue, legende, image) VALUE
+INSERT INTO vue (num_vue, legende, image) VALUES
   (1, "Vue globale", "../ressources/vue_generale.jpg"),
   (2, "Vue zoomant de l'entree aux dependances", "../ressources/vue_lieu_1-2-3.jpg");
 
-
-INSERT INTO representationLieuSurVue (num_vue, num_lieu, num_zone, x, y, xA, yA, xB, yB) VALUE
+INSERT INTO representationLieuSurVue (num_vue, num_lieu, num_zone, x, y, xA, yA, xB, yB) VALUES
   (1, 1, 1, 580, 472, 570, 530, 0, 0),
   (1, 2, 2, 540, 442, 540, 510, 0, 0),
   (1, 2, 23, 540, 442, 530, 490, 0, 0),
@@ -187,14 +185,26 @@ INSERT INTO representationLieuSurVue (num_vue, num_lieu, num_zone, x, y, xA, yA,
   (2, 2, 23, 220, 128, 200, 190, 40, 190),
   (2, 3, 3, 60, 28, 40, 190, 41, 10);
 
-INSERT INTO personne (nom, prenom, societe, dateDebut, dateFin, num_pers) VALUE
-  ("scherer", "nicolas", "LAB", 0, 0, 1);
 
-INSERT INTO badge (num_badge, num_pers, dateMiseEnService, dateChangePile, estActif) VALUE
+INSERT INTO personne (nom, prenom, societe, dateDebut, dateFin, num_pers, photo) VALUES
+  ('scherer', 'nicolas', 'LAB', '0000-00-00', '0000-00-00', 1, '../ressources/supprimer.png'),
+  ('dada', 'dodo', 'didi', '2013-05-01', '2013-05-29', 2, '');
+
+
+INSERT INTO badge (num_badge, num_pers, dateMiseEnService, dateChangePile, estActif) VALUES
   (01, 1, 0, 0, 0);
 
-INSERT INTO zone (num_zone, num_lieu,sensMonter, legende) VALUE
+INSERT INTO zone (num_zone, num_lieu,sensMonter, legende) VALUES
   (1, 1, 2, "reception uniquement lecteur 1"),
   (2, 2, 1, "reception uniquement lecteur 2"),
   (23, 2, 3, "reception lecteur 2 et lecteur 3"),
   (3, 3, 1, "reception uniquement lecteur 3");
+
+INSERT INTO log (num_badge, dateLog, legende) VALUES
+  (1, 'Mon May 27 16:17:19 2013', 'Nouveau badge'),
+  (1, 'Mon May 27 16:17:21 2013', 'Perte de Reception Badge'),
+  (1, 'Mon May 27 16:19:02 2013', 'Nouveau badge'),
+  (1, 'Mon May 27 16:19:04 2013', 'Perte de Reception Badge');
+
+INSERT INTO super (config, tempoM, tempoR) VALUES
+  (1, 5000, 2500);
