@@ -40,18 +40,18 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     connect(server, SIGNAL(sig_newConnection(const ClientConnection&)), this, SLOT(server_newConnection(const ClientConnection&)));
 
 
-    //réception signal homme en danger
+    //rÃ©ception signal homme en danger
     connect(this, SIGNAL(signalHommeEnDanger(QString &)), this, SLOT(hommeEnDanger(QString &)));
-    //réception signal perte réceptin
+    //rÃ©ception signal perte rÃ©ceptin
     connect(this, SIGNAL(signalPerteReception(int, int, T_ListeLabel *)), this, SLOT(perteReception(int, int, T_ListeLabel *)));
 
     //obtention du nombre de vue max
     int vueMax = pBdd->getVueMax();
 
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_TupleOnglet> listeTupleO;
 
-    //récupération des infos sur les onglets
+    //rÃ©cupÃ©ration des infos sur les onglets
     pBdd->getVue(&listeTupleO);
 
     if(!listeTupleO.empty()){
@@ -71,24 +71,24 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     ui->tabWidget->setCurrentIndex(0);
 
 
-    //régler les temps des timer en fonction de la base de données
+    //rÃ©gler les temps des timer en fonction de la base de donnÃ©es
     int tempoMouv; // ms tempo pour le timer mouvement
-    int tempoRec; // ms tempo pour le timer de réception
+    int tempoRec; // ms tempo pour le timer de rÃ©ception
     pBdd->getTempo(&tempoMouv, &tempoRec);
     this->setTempo(tempoMouv, tempoRec);
 
 
-   // lecteurActif(pLecteur);     // �  enlever �  l'intégration
-   // lecteurInactif(pLecteur);   // �  enlever �  l'intégration
-   // lecteurInconnu();           // �  enlever �  l'intégration
+   // lecteurActif(pLecteur);     // Ã  enlever Ã  l'intÃ©gration
+   // lecteurInactif(pLecteur);   // Ã  enlever Ã  l'intÃ©gration
+   // lecteurInconnu();           // Ã  enlever Ã  l'intÃ©gration
 
-   // traitementTrame("F60016A703");  //�  enlever �  l'intégration
-   // traitementTrame("050026B102");  //�  enlever �  l'intégration
+   // traitementTrame("F60016A703");  //Ã  enlever Ã  l'intÃ©gration
+   // traitementTrame("050026B102");  //Ã  enlever Ã  l'intÃ©gration
     //trame type : AD D01 6A7 01
     //AD niveau de reception
-    //DO1 n° de badge
+    //DO1 nÂ° de badge
     //6A7 mouvement
-    //01 n° lecteur
+    //01 nÂ° lecteur
 
 }
 ////////////
@@ -109,13 +109,13 @@ void Ihm::hommeEnDanger(QString & nom){
     ui->txtAlarme->textCursor().insertText("<ALARME> "+ nom + " est en danger ! Aucun mouvement.\n");
 }
 //////
-//SLOT perte réception
+//SLOT perte rÃ©ception
 //////
 void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
 
 
     //obtenir vue(s) en fonction du lecteur
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_TupleLecteurS> listeTupleL1;
 
     pBdd->getVueFctLect(numLecteur, &listeTupleL1);
@@ -128,13 +128,13 @@ void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
             //affichage
             tll->labelB[num_vue][numBadge]->setEnabled(true);
 
-            //en fonction de l'état
+            //en fonction de l'Ã©tat
             //dans tout les cas images sans sens de passage
             if (num_vue == 1){
                 //petite image
-                tll->labelB[num_vue][numBadge]->setPixmap(QPixmap("../ressources/pers_orange.jpg"));
+                tll->labelB[num_vue][numBadge]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
             }else{    //image normale
-                tll->labelB[num_vue][numBadge]->setPixmap(QPixmap("../ressources/pers_orange_2.jpg"));
+                tll->labelB[num_vue][numBadge]->setPixmap(QPixmap("ressources/pers_orange_2.jpg"));
             }
         } //fin for
     } //fin if
@@ -145,18 +145,18 @@ void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
  *-------------------------------*/
 bool Ihm::traitementTrame(QString trame){
 
-    //témoin timer affichage
+    //tÃ©moin timer affichage
     if (ui->lbActivite->isEnabled())
         ui->lbActivite->setEnabled(false);
     else
         ui->lbActivite->setEnabled(true);
 
-    //décodage trame
+    //dÃ©codage trame
     QString num_badge, sens, mouvement, num_lecteur;
     T_ListeLabel *tll;  //pointeur sur structure
 
-    //séparation des parties de la trame
-    num_badge = trame.mid(2,3); //numéro de badge
+    //sÃ©paration des parties de la trame
+    num_badge = trame.mid(2,3); //numÃ©ro de badge
 
     //suppression mauvais badge
     if(num_badge == "000") {
@@ -165,12 +165,12 @@ bool Ihm::traitementTrame(QString trame){
         return false;
     }
 
-    sens = trame.mid(0,2); //niveau de réception du tag
-    mouvement = trame.mid(5,3); //niveau de mouvement mesuré
-    num_lecteur = trame.mid(8,2);   //numéro du lecteur
+    sens = trame.mid(0,2); //niveau de rÃ©ception du tag
+    mouvement = trame.mid(5,3); //niveau de mouvement mesurÃ©
+    num_lecteur = trame.mid(8,2);   //numÃ©ro du lecteur
 
-    //conversion des valeurs en int �  partir de ASCII hexa et mise �  l'échelle
-    //c'est-� -dire conversion de l'hexadécimal en décimal
+    //conversion des valeurs en int Ã  partir de ASCII hexa et mise Ã  l'Ã©chelle
+    //c'est-Ã -dire conversion de l'hexadÃ©cimal en dÃ©cimal
     int num_badge_i = num_badge.toInt(0,16);
     int sens_i = sens.toInt(0,16);
     int num_lecteur_i = num_lecteur.toInt(0,16);
@@ -178,19 +178,19 @@ bool Ihm::traitementTrame(QString trame){
 
     //si le badge n'existe pas dans la BDD
     if(!pBdd->badgeExiste(num_badge)){
-        ui->txtAlarme->textCursor().insertText("<Erreur><Badge "+num_badge+QString::fromUtf8("> Badge inconnu  dans la Base de données\n"));
+        ui->txtAlarme->textCursor().insertText("<Erreur><Badge "+num_badge+QString::fromUtf8("> Badge inconnu  dans la Base de donnÃ©es\n"));
         return false;
     }
 
     //badge n'existe pas sur l'IHM
     if(!pDynamique->BadgeActif[num_badge_i]){
 
-        //Historique des événements (log) : nouveau badge
+        //Historique des Ã©vÃ©nements (log) : nouveau badge
         pBdd->setLog(1, num_badge_i);    //1=nouveau badge
 
         tll = new T_ListeLabel();
 
-        for(int i=0 ; i<MAXLECTEURS ; i++){   // init �  100
+        for(int i=0 ; i<MAXLECTEURS ; i++){   // init Ã  100
             for(int j=0 ; j<MAXVAL ; j++){
                 tll->moySens[i][j]=100;
             }
@@ -199,15 +199,15 @@ bool Ihm::traitementTrame(QString trame){
             tll->sdp[i]=0;      //sens de passage
             tll->sdpMem[i]=0;
         }
-        memset(tll->indMoy, 0, sizeof(tll->indMoy));    //init �  0
+        memset(tll->indMoy, 0, sizeof(tll->indMoy));    //init Ã  0
 
         //obtenir vue(s) en fonction du lecteur
-        //déclaration QList
+        //dÃ©claration QList
         QList<T_TupleLecteurS> listeTupleL;
 
         pBdd->getVueFctLect(num_lecteur_i, &listeTupleL);
 
-        //récupération des infos dans la liste
+        //rÃ©cupÃ©ration des infos dans la liste
         if (!listeTupleL.empty()){
             for (int i = 0; i < listeTupleL.count(); i++) {
 
@@ -220,36 +220,36 @@ bool Ihm::traitementTrame(QString trame){
                 //nouveau label dynamique pour un badge
                 tll->labelB[num_vue][num_badge_i] = new QLabel(onglet);
 
-                //réglage par défaut du nouveau badge (vert + haut)
-                tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/haut_vert.jpg"));
-                tll->labelB[num_vue][num_badge_i]->setGeometry(590, 620, 15, 42); // largeur hauteur �  définir
+                //rÃ©glage par dÃ©faut du nouveau badge (vert + haut)
+                tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_vert.jpg"));
+                tll->labelB[num_vue][num_badge_i]->setGeometry(590, 620, 15, 42); // largeur hauteur Ã  dÃ©finir
             }
         }
 
-        tll->numBadge = num_badge_i;        //numéro de badge
-        tll->numLecteur = num_lecteur_i;    //numéro de lecteur
+        tll->numBadge = num_badge_i;        //numÃ©ro de badge
+        tll->numLecteur = num_lecteur_i;    //numÃ©ro de lecteur
         tll->etat = 0;                      //aller
 
-        // réglage du timer associé au mouvement
+        // rÃ©glage du timer associÃ© au mouvement
         tll->tpsMouv = new QTimer(this);                                    //nouveau Timer
         connect(tll->tpsMouv, SIGNAL(timeout()), this, SLOT(timerMouv()));  //connect timeout
         tll->tpsMouv->setSingleShot(true);                                  //un seul temps
-        tll->tpsMouv->start(this->tempoM);                                  //débute le timer
+        tll->tpsMouv->start(this->tempoM);                                  //dÃ©bute le timer
 
-        // réglage du timer associé �  la réception
+        // rÃ©glage du timer associÃ© Ã  la rÃ©ception
         tll->tpsSens[num_lecteur_i] = new QTimer(this);                                     //nouveau Timer
         connect(tll->tpsSens[num_lecteur_i], SIGNAL(timeout()), this, SLOT(timerRec()));   //connect timeout
         tll->tpsSens[num_lecteur_i]->setSingleShot(true);                                   //un seul temps
-        tll->tpsSens[num_lecteur_i]->start(this->tempoR);                                   //débute le timer
+        tll->tpsSens[num_lecteur_i]->start(this->tempoR);                                   //dÃ©bute le timer
 
-        // ajout �  la liste mémoire
+        // ajout Ã  la liste mÃ©moire
         listeLabel.append(tll);
 
         //maintenant le badge existe sur l'IHM donc le sauvegarder
         pDynamique->BadgeActif[num_badge_i] = true;
     }
 
-    tll->numLecteur = num_lecteur_i;    //sauvegarde numéro lecteur
+    tll->numLecteur = num_lecteur_i;    //sauvegarde numÃ©ro lecteur
 
     tll->etat |= MOUV0;   // mouv=0
     //relance du timer si mouvement
@@ -260,26 +260,26 @@ bool Ihm::traitementTrame(QString trame){
         tll->tpsMouv->start(this->tempoM);  //ms
     }
 
-    // réarmer le timer REC, le créer si nouveau lecteur
+    // rÃ©armer le timer REC, le crÃ©er si nouveau lecteur
     tll->etat &= ~REC;
-    //création timer réception, si nouveau lecteur
+    //crÃ©ation timer rÃ©ception, si nouveau lecteur
     if (!tll->tpsSens[num_lecteur_i]) {
         tll->tpsSens[num_lecteur_i] = new QTimer(this);
         connect(tll->tpsSens[num_lecteur_i], SIGNAL(timeout()), this, SLOT(TimerRec()));
     }
-    //réarmer le timer de réception
+    //rÃ©armer le timer de rÃ©ception
     tll->tpsSens[num_lecteur_i]->setSingleShot(true);
     tll->tpsSens[num_lecteur_i]->start(this->tempoR);
 
 
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_Personne > listePersonne;
 
-    //Recherche identité de la personne
+    //Recherche identitÃ© de la personne
     int num_pers = pBdd->badgeIdentite(num_badge_i, &listePersonne);
     if (num_pers == -1){
-        //le badge n'est pas lié avec une personne
-        ui->txtAlarme->textCursor().insertText("<Erreur><Badge "+num_badge+QString::fromUtf8("> Badge non lié �  une personne\n"));
+        //le badge n'est pas liÃ© avec une personne
+        ui->txtAlarme->textCursor().insertText("<Erreur><Badge "+num_badge+QString::fromUtf8("> Badge non liÃ© Ã  une personne\n"));
     } else {
         tll->nom[num_pers] = listePersonne.at(0).nom;
         tll->prenom[num_pers] = listePersonne.at(0).prenom;
@@ -288,7 +288,7 @@ bool Ihm::traitementTrame(QString trame){
     }
 
 
-    // calcul de la moyenne de la sensibilité
+    // calcul de la moyenne de la sensibilitÃ©
     tll->moySens[num_lecteur_i][tll->indMoy[num_lecteur_i]++] = sens_i ;
 
     if (tll->indMoy[num_lecteur_i] == MAXVAL){
@@ -296,27 +296,27 @@ bool Ihm::traitementTrame(QString trame){
     }
     int moy = 0;
     moy = calculerMoyenne(tll);     //sur MAXVAL valeur
-    tll->sdp[num_lecteur_i] = moy;  //mémo pour calcul sens de passage
+    tll->sdp[num_lecteur_i] = moy;  //mÃ©mo pour calcul sens de passage
     moy -= 100;
 
     if (!sensDePassage(tll)){ //maj de zone et du sens de passage de ce badge
         //pas de sens de passage
         qDebug("pas de sens de passage dans BDD");
-        ui->txtAlarme->textCursor().insertText("<Erreur><Lecteur "+num_lecteur+ QString::fromUtf8("> Pas de sens de passage précisé dans BDD\n"));
+        ui->txtAlarme->textCursor().insertText("<Erreur><Lecteur "+num_lecteur+ QString::fromUtf8("> Pas de sens de passage prÃ©cisÃ© dans BDD\n"));
         return false;
     }
 
-    // recherche si lecteur n'est pas connecté
+    // recherche si lecteur n'est pas connectÃ©
     if (!pBdd->getEtatLect(num_lecteur_i)){
         qDebug("le lecteur n'est pas connecte ?!");
-        ui->txtAlarme->textCursor().insertText("<Erreur><Lecteur "+num_lecteur+QString::fromUtf8("> Lecteur non connecté\n"));
+        ui->txtAlarme->textCursor().insertText("<Erreur><Lecteur "+num_lecteur+QString::fromUtf8("> Lecteur non connectÃ©\n"));
         return false;
     }
 
     //Obtenir les points de la zone en fonction des vues
 
     //obtenir vue(s) en fonction du lecteur
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_TupleLecteurS> listeTupleL;
 
     pBdd->getVueFctLect(num_lecteur_i, &listeTupleL);
@@ -333,26 +333,26 @@ bool Ihm::traitementTrame(QString trame){
             //affichage
             tll->labelB[num_vue][num_badge_i]->setEnabled(true);
 
-            //en fonction de l'état
+            //en fonction de l'Ã©tat
             switch(tll->etat) {
             case 0:  // ALLER
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_vert.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_vert.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/haut_vert.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_vert.jpg"));
                 }
                 break;
             case 1:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/haut_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
-                //Historique des événements (log) : alarme mouvement
+                //Historique des Ã©vÃ©nements (log) : alarme mouvement
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 2:
@@ -364,21 +364,21 @@ bool Ihm::traitementTrame(QString trame){
             case 4:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_vert.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_vert.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/bas_vert.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_vert.jpg"));
                 }
                 break;
             case 5:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/bas_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
-                //Historique des événements (log) : alarme mouvement
+                //Historique des Ã©vÃ©nements (log) : alarme mouvement
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 6:
@@ -390,21 +390,21 @@ bool Ihm::traitementTrame(QString trame){
             case 8:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_orange.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/haut_orange.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_orange.jpg"));
                 }
                 break;
             case 9:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/haut_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
-                //Historique des événements (log) : alarme mouvement
+                //Historique des Ã©vÃ©nements (log) : alarme mouvement
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 10:
@@ -416,21 +416,21 @@ bool Ihm::traitementTrame(QString trame){
             case 12:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_orange.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/bas_orange.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_orange.jpg"));
                 }
                 break;
             case 13:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/pers_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("../ressources/bas_rouge.jpg"));
+                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
-                //Historique des événements (log) : alarme mouvement
+                //Historique des Ã©vÃ©nements (log) : alarme mouvement
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 14:
@@ -442,25 +442,25 @@ bool Ihm::traitementTrame(QString trame){
             } //fin switch
 
             //affichage position exacte badge
-            if (num_vue==1 && num_pers==1)  //taille petite, pas de décalement
+            if (num_vue==1 && num_pers==1)  //taille petite, pas de dÃ©calement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,15,20);
-            else if (num_vue==1 && num_pers!=1) //taile petite, décalement
+            else if (num_vue==1 && num_pers!=1) //taile petite, dÃ©calement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (15*num_pers), tll->ptBadge[num_vue].y,15,20);
 
-            else if (num_vue!=1 && num_pers==1) //taille grande, pas de décalement
+            else if (num_vue!=1 && num_pers==1) //taille grande, pas de dÃ©calement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,30,20);
-            else    //taille grande, décalement
+            else    //taille grande, dÃ©calement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (30*num_pers), tll->ptBadge[num_vue].y,30,20);
 
-            //affichage identité personne
+            //affichage identitÃ© personne
             if (num_pers != -1) {
                tll->labelB[num_vue][num_badge_i]->setToolTip("<img src=':" + tll->photo[num_pers] + "'/>"
                                                              +" Badge "+ QString::number(num_badge_i) +" de : "
                                                              + tll->nom[num_pers] +" "  + tll->prenom[num_pers]
-                                                             +QString::fromUtf8(" Société : ")+ tll->societe[num_pers]);
+                                                             +QString::fromUtf8(" SociÃ©tÃ© : ")+ tll->societe[num_pers]);
 
-            } else { //badge pas affecté
-                tll->labelB[num_vue][num_badge_i]->setToolTip(QString::fromUtf8("Badge non affecté �  une personne"));
+            } else { //badge pas affectÃ©
+                tll->labelB[num_vue][num_badge_i]->setToolTip(QString::fromUtf8("Badge non affectÃ© Ã  une personne"));
             }
 
         } //fin for
@@ -474,7 +474,7 @@ bool Ihm::traitementTrame(QString trame){
 ///////////////////////////////////////////////////////////////
 void Ihm::calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *pointF)
 {
-    //pas de calcul, les points correspondent �  la droite (uniquement vue 1)
+    //pas de calcul, les points correspondent Ã  la droite (uniquement vue 1)
     if ((pointB.x == 0) && (pointB.y == 0)){
         pointF->x = pointA.x;
         pointF->y = pointA.y;
@@ -486,9 +486,9 @@ void Ihm::calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *poin
         dx = pointB.x - pointA.x;
         dy = pointB.y - pointA.y;
 
-        x = sens*dx/100;  // mise �  l'échelle
-        a = dy/dx;     // coeff directeur, pas d'ordonnée �  l'origine car changement de repère
-        y = a*x;   // équation de la droite
+        x = sens*dx/100;  // mise Ã  l'Ã©chelle
+        a = dy/dx;     // coeff directeur, pas d'ordonnÃ©e Ã  l'origine car changement de repÃšre
+        y = a*x;   // Ã©quation de la droite
         pointF->x = pointA.x + x;
         pointF->y = pointA.y + y;
     }
@@ -500,7 +500,7 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
 {
     int sensMonter = pBdd->getSensMonter(tll->numLecteur);
 
-    //sens de montée = rapprochement
+    //sens de montÃ©e = rapprochement
     if (sensMonter == 1){
 
         //RSSI plus petit donc aller
@@ -519,7 +519,7 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
             tll->zone = tll->numLecteur;
 
         return true;
-    //sens de montée = éloignement
+    //sens de montÃ©e = Ã©loignement
     }else if (sensMonter == 2){
 
         //RSSSI plus petit donc retour
@@ -538,10 +538,10 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
             tll->zone = tll->numLecteur;
 
         return true;
-    //sens de montée = zone contigüe
+    //sens de montÃ©e = zone contigÃŒe
     }else if (sensMonter == 3){
 
-        //détermination de la zone contigüe
+        //dÃ©termination de la zone contigÃŒe
         if (tll->sdp[tll->numLecteur+1]>0)
             tll->zone = tll->numLecteur*11+1;
 
@@ -561,7 +561,7 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
 ///////////////////////////////////////////////////////////////
 int Ihm::calculerMoyenne(T_ListeLabel *tll)
 {
-    // calcul de la moyenne de la sensibilité
+    // calcul de la moyenne de la sensibilitÃ©
     int sumMoy=0;
     for (int i=0 ; i<MAXVAL ; i++)
         sumMoy += tll->moySens[tll->numLecteur][i];
@@ -595,19 +595,19 @@ void Ihm::timerRec() {
             if (tll->tpsSens[num_lecteur])
                 //
                 if (!tll->tpsSens[num_lecteur]->isActive() && pBdd->getEtatLect(num_lecteur)) {
-                    ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<ALARME> Perte de réception du badge ")+ QString("%1").arg(tll->numBadge,0,16));
-                    //Historique des événements (log) : perte réception
-                    pBdd->setLog(2, i); //2=perte de réception
-                    //signal perte de réception
+                    ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<ALARME> Perte de rÃ©ception du badge ")+ QString("%1").arg(tll->numBadge,0,16));
+                    //Historique des Ã©vÃ©nements (log) : perte rÃ©ception
+                    pBdd->setLog(2, i); //2=perte de rÃ©ception
+                    //signal perte de rÃ©ception
                     emit signalPerteReception(tll->numBadge, num_lecteur, tll);
 
-                    //arrêt du timer de mouvement
+                    //arrÃªt du timer de mouvement
                     tll->tpsMouv->stop();
-                    //mise �  jour état
+                    //mise Ã  jour Ã©tat
                     tll->etat |= REC;
                     //perte du badge dans BDD
                     pBdd->setBadgePerdu(tll->numBadge);
-                    //mise �  jour tableaux pour sens de passage
+                    //mise Ã  jour tableaux pour sens de passage
                     tll->sdp[num_lecteur] = 0;
                     tll->sdpMem[num_lecteur] = 0;
                 }
@@ -619,10 +619,10 @@ void Ihm::timerRec() {
 /*** DESTRUCTEUR ***/
 Ihm::~Ihm()
 {
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_Badge> listeBadge;
 
-    //récupération des infos sur les onglets
+    //rÃ©cupÃ©ration des infos sur les onglets
     pBdd->badgeExistant(&listeBadge);
 
     if(!listeBadge.empty()){
@@ -640,19 +640,19 @@ Ihm::~Ihm()
 }
 //////////////////////////////
 /*** SLOT LECTEUR INCONNU ***/
-void Ihm::lecteurInconnu(){
+void Ihm::lecteurInconnu(QString ip){
     //ajout texte Ihm
-    ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<Erreur> Quelque chose a tenté de se connecter\n"));
+    ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<Erreur> Quelque chose a tenté de se connecter. Son IP: ")+ip+" \n");
 }
 //////////////////////////////
 /*** SLOT LECTEUR INACTIF ***/
 void Ihm::lecteurInactif(int numLecteur){
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_TupleLecteurS> listeTupleL;
 
     pBdd->getVueFctLect(numLecteur, &listeTupleL);
 
-    //récupération des infos dans la liste
+    //rÃ©cupÃ©ration des infos dans la liste
     if(!listeTupleL.empty()){
         for(int i = 0; i < listeTupleL.count(); i++) {
             int num_vue = listeTupleL.at(i).num_vue;
@@ -664,7 +664,7 @@ void Ihm::lecteurInactif(int numLecteur){
 
 }
 /////////////////////////////////////
-/*** méthode SUPPRESSION LECTEUR ***/
+/*** mÃ©thode SUPPRESSION LECTEUR ***/
 void Ihm::suppLecteur(int numLecteur, int num_vue){
     //message d'avertissement (Alarmes)
     QString numLecteurS = QString::number(numLecteur);
@@ -673,7 +673,7 @@ void Ihm::suppLecteur(int numLecteur, int num_vue){
     supLecteur += numLecteurS;
     supLecteur += "><Vue ";
     supLecteur += numVueS;
-    supLecteur += QString::fromUtf8("> vient de se déconnecter");
+    supLecteur += QString::fromUtf8("> vient de se dÃ©connecter");
     ui->txtAlarme->textCursor().insertText(supLecteur + "\n");
 
 }
@@ -682,19 +682,19 @@ void Ihm::suppLecteur(int numLecteur, int num_vue){
 void Ihm::lecteurActif(Reader Lecteur){
 
     ClientConnection *cCL;
-    //sender retourne l'adresse de l'objet ayant �mis le signal
-    //utilis� ensuite pour faire les connect
+    //sender retourne l'adresse de l'objet ayant émis le signal
+    //utilisé ensuite pour faire les connect
     cCL = (ClientConnection *) this->sender();
 
-    //obtenir le numéro de lecteur grâce �  la classe Reader
+    //obtenir le numÃ©ro de lecteur grÃ¢ce Ã  la classe Reader
     unsigned int numLecteur = Lecteur.number();
 
-    //déclaration QList
+    //dÃ©claration QList
     QList<T_TupleLecteurE> listeTupleLA;
 
     pBdd->getVuePosFctLect(numLecteur, &listeTupleLA);
 
-    //récupération des infos dans la liste
+    //rÃ©cupÃ©ration des infos dans la liste
     if(!listeTupleLA.empty()){
         for(int i = 0; i < listeTupleLA.count(); i++) {
             int num_vue = listeTupleLA.at(i).num_vue;
@@ -708,7 +708,7 @@ void Ihm::lecteurActif(Reader Lecteur){
 
 }
 ///////////////////////////////
-/*** méthode AJOUT LECTEUR ***/
+/*** mÃ©thode AJOUT LECTEUR ***/
 void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnection *cCL){
 
     //se placer sur le bon onglet
@@ -719,13 +719,13 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
 
     //nouveau label dynamique pour mettre l'image correspondant
     QLabel *labelL = new QLabel(onglet);
-    //différente taille d'images utilisées
+    //diffÃ©rente taille d'images utilisÃ©es
     if(num_vue == 1){
-        labelL->setPixmap(QPixmap("../ressources/lecteur_actif_petit.jpg"));
+        labelL->setPixmap(QPixmap("ressources/lecteur_actif_petit.jpg"));
     }else{
-        labelL->setPixmap(QPixmap("../ressources/lecteur_actif.jpg"));
+        labelL->setPixmap(QPixmap("..//lecteur_actif.jpg"));
         }
-    labelL->setGeometry(x, y, 15, 42); // largeur hauteur �  définir
+    labelL->setGeometry(x, y, 15, 42); // largeur hauteur Ã  dÃ©finir
 
     //sauvegarde du pointeur du label du lecteur
     //pDynamique->labelL[num_vue][numLecteur] = labelL;
@@ -738,10 +738,10 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
     connect(cCL, SIGNAL(sig_disconnected()), aA, SLOT(lecteurInactif()));
 }
 //////////////////////////////
-/*** méthode AJOUT ONGLET ***/
+/*** mÃ©thode AJOUT ONGLET ***/
 void Ihm::ajoutOnglet(int num_vue, QString legende, QString image)
 {
-    //nouveau onglet dynamique avec légende
+    //nouveau onglet dynamique avec lÃ©gende
     ContenuOnglet *pContenuOnglet = new ContenuOnglet(0, image);
     ui->tabWidget->insertTab(num_vue, pContenuOnglet, legende);
 
@@ -837,7 +837,7 @@ void Ihm::server_switchedOff()
 void Ihm::server_switchedOffOnError(QString error)
 {
     qDebug() << QThread::currentThreadId() << Q_FUNC_INFO;
-    QMessageBox::critical(this, "Erreur", "L'erreur suivante est survenue :\n" + error + ".\n L'écoute du serveur a été stoppée.");
+    QMessageBox::critical(this, "Erreur", "L'erreur suivante est survenue :\n" + error + ".\n L'Ã©coute du serveur a Ã©tÃ© stoppÃ©e.");
 }
 
 void Ihm::server_addressChanged(QString address)
@@ -870,10 +870,10 @@ void Ihm::server_newConnection(const ClientConnection&cC)
 
     connect(ui->killAllComPushButton, SIGNAL(clicked()), &cC, SLOT(close()));
 
-    connect(&cC, SIGNAL(sig_isAReader(Reader)), this, SLOT(lecteurActif(Reader))); //lecteur connect�
+    connect(&cC, SIGNAL(sig_isAReader(Reader)), this, SLOT(lecteurActif(Reader))); //lecteur connecté
     connect(&cC, SIGNAL(sig_isNotAReader(QString)), SLOT(lecteurInconnu(QString))); //lecteur (ou autre chose) inconnu
-    connect(&cC, SIGNAL(sig_dataRead(QString)), SLOT(traitementTrame(QString)));    //donn�es
-    connect(&cC, SIGNAL(sig_closed()), SLOT(slot_closed()));  //d�branch�
+    connect(&cC, SIGNAL(sig_dataRead(QString)), SLOT(traitementTrame(QString)));    //données
+    connect(&cC, SIGNAL(sig_closed()), SLOT(slot_closed()));  //débranché
     connect(&cC, SIGNAL(destroyed()), SLOT(slot_destroyed()));
 
     cC.connect(this, SIGNAL(sig_closeConnection()), SLOT(close()));

@@ -36,12 +36,12 @@ private:
 
     /*---Config de Super---*/
     int tempoM; // ms tempo pour le timer mouvement
-    int tempoR; // ms tempo pour le timer de réception
+    int tempoR; // ms tempo pour le timer de rÃ©ception
     void setTempo(int, int);
 
     QList<T_ListeLabel *> listeLabel;
 
-    int calculerMoyenne(T_ListeLabel *tll); //calculer moyenne sensibilité
+    int calculerMoyenne(T_ListeLabel *tll); //calculer moyenne sensibilitÃ©
     bool sensDePassage(T_ListeLabel *tll);  //sens de passage
     void calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *pointF);    //calcul position exacte
 
@@ -53,10 +53,10 @@ private:
 
 signals:
     void signalHommeEnDanger(QString &);    //alarme homme en danger
-    void signalPerteReception(int numBadge, int numLecteur, T_ListeLabel *);    //perte de réception
+    void signalPerteReception(int numBadge, int numLecteur, T_ListeLabel *);    //perte de rÃ©ception
 
 public slots:
-    //lié �  la connexion/déconnexion des lecteurs
+    //liÃ© Ã  la connexion/dÃ©connexion des lecteurs
     void lecteurActif(Reader Lecteur);
     void lecteurInactif(int);
     void lecteurInconnu(QString);
@@ -66,13 +66,13 @@ public slots:
 
     //timer mouvement (homme en danger)
     void timerMouv();
-    //timer réception (perte de badge)
+    //timer rÃ©ception (perte de badge)
     void timerRec();
 
 private slots:
     //homme en danger (alarme)
     void hommeEnDanger(QString &);
-    //perte de réception
+    //perte de rÃ©ception
     void perteReception(int, int, T_ListeLabel *);
 
     void addressLineEdit_textEdited(QString);
