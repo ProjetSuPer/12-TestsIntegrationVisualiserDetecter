@@ -6,11 +6,12 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QRegExp>
 
 QMutex ClientConnection::_mutex;
 
 ClientConnection::ClientConnection(int socketDescriptor) :
-    QObject(), _socketDescriptor(socketDescriptor), _opened(false), _isAReader(false), _clientAddress("")
+    QObject(), _socketDescriptor(socketDescriptor), _opened(false), _isAReader(false), _clientAddress(""), _bufferDataRead("")
 {
     qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << socketDescriptor;
     _tcpSocket.setParent(this);
@@ -164,12 +165,31 @@ void ClientConnection::filter()
 void ClientConnection::readyRead()
 {
     qint64 nbBytesAvailable = _tcpSocket.bytesAvailable();
-    qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << "bytesAvailable:" << nbBytesAvailable;
+    QString dataRead = _tcpSocket.readAll();
+    _bufferDataRead += dataRead;
 
-    if(nbBytesAvailable > 0)
+    qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << "bytesAvailable:" << nbBytesAvailable;
+    qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << "dataRead :" << dataRead;
+    qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << "_bufferDataRead :" << _bufferDataRead;
+
+    emit sig_dataRead(dataRead);
+
+    if(_bufferDataRead.count() >= 12)
     {
-        QString data = _tcpSocket.readAll();
-        emit sig_dataRead(data);
+        QString regexFrameString("\\[[0-9A-F]{10}\\]");
+        QRegExp lastValidFrameRegex("(" + regexFrameString + ")(?!" + regexFrameString + ")");
+
+        if(_bufferDataRead.contains(lastValidFrameRegex))
+        {
+            QString lastValidFrameString = lastValidFrameRegex.cap(1);
+            _bufferDataRead.clear();
+
+            qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << "lastValidFrameString :" << lastValidFrameString;
+
+            emit sig_frameReceived(lastValidFrameString);
+        }
+        else
+            qDebug() << QThread::currentThreadId() << Q_FUNC_INFO << "! data.contains(lastFrameRegex)";
     }
 }
 
