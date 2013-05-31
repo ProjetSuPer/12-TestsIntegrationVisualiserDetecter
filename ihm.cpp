@@ -82,7 +82,7 @@ Ihm::Ihm(Server *server, QWidget *parent) :
    // lecteurInactif(pLecteur);   // Ã  enlever Ã  l'intÃ©gration
    // lecteurInconnu();           // Ã  enlever Ã  l'intÃ©gration
 
-   // traitementTrame("F60016A703");  //Ã  enlever Ã  l'intÃ©gration
+   // traitementTrame("[F60016A703]");  //Ã  enlever Ã  l'intÃ©gration
    // traitementTrame("050026B102");  //Ã  enlever Ã  l'intÃ©gration
     //trame type : AD D01 6A7 01
     //AD niveau de reception
@@ -156,7 +156,7 @@ bool Ihm::traitementTrame(QString trame){
     T_ListeLabel *tll;  //pointeur sur structure
 
     //sÃ©paration des parties de la trame
-    num_badge = trame.mid(2,3); //numÃ©ro de badge
+    num_badge = trame.mid(3,3); //numÃ©ro de badge
 
     //suppression mauvais badge
     if(num_badge == "000") {
@@ -165,9 +165,9 @@ bool Ihm::traitementTrame(QString trame){
         return false;
     }
 
-    sens = trame.mid(0,2); //niveau de rÃ©ception du tag
-    mouvement = trame.mid(5,3); //niveau de mouvement mesurÃ©
-    num_lecteur = trame.mid(8,2);   //numÃ©ro du lecteur
+    sens = trame.mid(1,2); //niveau de rÃ©ception du tag
+    mouvement = trame.mid(6,3); //niveau de mouvement mesurÃ©
+    num_lecteur = trame.mid(9,2);   //numÃ©ro du lecteur
 
     //conversion des valeurs en int Ã  partir de ASCII hexa et mise Ã  l'Ã©chelle
     //c'est-Ã -dire conversion de l'hexadÃ©cimal en dÃ©cimal
@@ -681,10 +681,12 @@ void Ihm::suppLecteur(int numLecteur, int num_vue){
 /*** SLOT LECTEUR ACTIF ***/
 void Ihm::lecteurActif(Reader Lecteur){
 
+    qDebug() << "SLOT lecteurActif";
     ClientConnection *cCL;
     //sender retourne l'adresse de l'objet ayant émis le signal
     //utilisé ensuite pour faire les connect
     cCL = (ClientConnection *) this->sender();
+    qDebug() << "le cCL dans le SLOT =" << cCL;
 
     //obtenir le numÃ©ro de lecteur grÃ¢ce Ã  la classe Reader
     unsigned int numLecteur = Lecteur.number();
@@ -711,6 +713,7 @@ void Ihm::lecteurActif(Reader Lecteur){
 /*** mÃ©thode AJOUT LECTEUR ***/
 void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnection *cCL){
 
+    qDebug() << "ajoutLecteur : " << numLecteur << num_vue << x << y;
     //se placer sur le bon onglet
     QWidget *onglet;
     onglet = pDynamique->onglet[num_vue];
@@ -719,29 +722,33 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
 
     //nouveau label dynamique pour mettre l'image correspondant
     QLabel *labelL = new QLabel(onglet);
+    //QLabel *labeltest = new QLabel(onglet);
     //diffÃ©rente taille d'images utilisÃ©es
     if(num_vue == 1){
         labelL->setPixmap(QPixmap("ressources/lecteur_actif_petit.jpg"));
     }else{
-        labelL->setPixmap(QPixmap("..//lecteur_actif.jpg"));
-        }
+        labelL->setPixmap(QPixmap("ressources/lecteur_actif.jpg"));
+    }
     labelL->setGeometry(x, y, 15, 42); // largeur hauteur Ã  dÃ©finir
-
+    labelL->setVisible(true);
+    //labeltest->setPixmap(QPixmap("ressources/lecteur_actif.jpg"));
+    //labeltest->setGeometry(300, 300, 15, 42); // largeur hauteur Ã  dÃ©finir
     //sauvegarde du pointeur du label du lecteur
     //pDynamique->labelL[num_vue][numLecteur] = labelL;
-
+/*
     AfficheAlarme *aA = new AfficheAlarme(this, numLecteur);
     connect(aA, SIGNAL(signalLecteurInactif(int)), this, SLOT(lecteurInactif(int)));
     //en cas de suppression
     connect(cCL, SIGNAL(sig_disconnected()), labelL, SLOT(clear()));
     connect(cCL, SIGNAL(sig_disconnected()), labelL, SLOT(deleteLater()));
     connect(cCL, SIGNAL(sig_disconnected()), aA, SLOT(lecteurInactif()));
+*/
 }
 //////////////////////////////
 /*** mÃ©thode AJOUT ONGLET ***/
 void Ihm::ajoutOnglet(int num_vue, QString legende, QString image)
 {
-    //nouveau onglet dynamique avec lÃ©gende
+    //nouveau onglet dynamique avec légende
     ContenuOnglet *pContenuOnglet = new ContenuOnglet(0, image);
     ui->tabWidget->insertTab(num_vue, pContenuOnglet, legende);
 
@@ -837,7 +844,7 @@ void Ihm::server_switchedOff()
 void Ihm::server_switchedOffOnError(QString error)
 {
     qDebug() << QThread::currentThreadId() << Q_FUNC_INFO;
-    QMessageBox::critical(this, "Erreur", "L'erreur suivante est survenue :\n" + error + ".\n L'Ã©coute du serveur a Ã©tÃ© stoppÃ©e.");
+    QMessageBox::critical(this, "Erreur", "L'erreur suivante est survenue :\n" + error + ".\n L'écoute du serveur a Ã©tÃ© stoppÃ©e.");
 }
 
 void Ihm::server_addressChanged(QString address)
@@ -868,13 +875,13 @@ void Ihm::server_newConnection(const ClientConnection&cC)
 {
     qDebug() << QThread::currentThreadId() << Q_FUNC_INFO;
 
-    connect(ui->killAllComPushButton, SIGNAL(clicked()), &cC, SLOT(close()));
+   // connect(ui->killAllComPushButton, SIGNAL(clicked()), &cC, SLOT(close()));
 
     connect(&cC, SIGNAL(sig_isAReader(Reader)), this, SLOT(lecteurActif(Reader))); //lecteur connecté
-    connect(&cC, SIGNAL(sig_isNotAReader(QString)), SLOT(lecteurInconnu(QString))); //lecteur (ou autre chose) inconnu
-    connect(&cC, SIGNAL(sig_dataRead(QString)), SLOT(traitementTrame(QString)));    //données
-    connect(&cC, SIGNAL(sig_closed()), SLOT(slot_closed()));  //débranché
-    connect(&cC, SIGNAL(destroyed()), SLOT(slot_destroyed()));
+    connect(&cC, SIGNAL(sig_isNotAReader(QString)), this, SLOT(lecteurInconnu(QString))); //lecteur (ou autre chose) inconnu
+   // connect(&cC, SIGNAL(sig_dataRead(QString)), this, SLOT(traitementTrame(QString)));    //données
+   // connect(&cC, SIGNAL(sig_closed()), SLOT(slot_closed()));  //débranché
+   // connect(&cC, SIGNAL(destroyed()), SLOT(slot_destroyed()));
 
-    cC.connect(this, SIGNAL(sig_closeConnection()), SLOT(close()));
+   // cC.connect(this, SIGNAL(sig_closeConnection()), SLOT(close()));
 }
