@@ -7,6 +7,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QRegExp>
+#include <QDebug>
 
 QMutex ClientConnection::_mutex;
 

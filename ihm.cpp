@@ -4,7 +4,7 @@
 #include "server.h"
 #include <QtSql>
 #include <QString>
-#include <QtDebug>
+#include <QDebug>
 #include <QMessageBox>
 #include <QLabel>
 #include <QToolTip>

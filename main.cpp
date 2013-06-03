@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QLabel>
 #include <QTextCodec>
+#include <QDebug>
 #include "ihm.h"
 #include "server.h"
 

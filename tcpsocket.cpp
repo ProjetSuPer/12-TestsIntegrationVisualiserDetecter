@@ -1,5 +1,6 @@
 #include "tcpsocket.h"
 #include <QThread>
+#include <QDebug>
 
 TcpSocket::TcpSocket(QObject *parent) :
     QTcpSocket(parent)

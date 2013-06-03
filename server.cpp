@@ -1,6 +1,7 @@
 #include "server.h"
-#include <QThread>
 #include "thread.h"
+#include <QThread>
+#include <QDebug>
 
 Server::SwitchOnState Server::switchOn()
 {

@@ -1,5 +1,6 @@
 #include "tcpserver.h"
 #include <QThread>
+#include <QDebug>
 
 TcpServer::TcpServer(QObject *parent) :
     QTcpServer(parent)
