@@ -2,6 +2,8 @@
 -- Utilisateur de la bdd : user_super
 -- Mot de passe de l'utilisateur : mdp_super
 
+GRANT ALL PRIVILEGES ON `bdd_super`.* TO 'user_super' IDENTIFIED BY 'mdp_super' WITH GRANT OPTION;
+
 DROP DATABASE IF EXISTS bdd_super;
 
 CREATE DATABASE IF NOT EXISTS bdd_super CHARACTER SET 'utf8' COLLATE utf8_bin;
@@ -66,21 +68,44 @@ CREATE TABLE representationLieuSurVue
 
 )ENGINE=INNODB;
 
+
 #DROP TABLE IF EXISTS personne;
 
 CREATE TABLE personne
 (
-   num_pers	INT UNSIGNED 	NOT NULL,
+   num_pers	INT UNSIGNED 	NOT NULL AUTO_INCREMENT,
    nom		VARCHAR(50)	NOT NULL,
    prenom	VARCHAR(50)	NOT NULL,
-   societe	VARCHAR(50)	NOT NULL,
-   dateDebut	DATE		NOT NULL,
-   dateFin	DATE		NOT NULL,
-   photo	VARCHAR(100)	NOT NULL,
+   societe	VARCHAR(50)	DEFAULT NULL,
+   dateDebut	DATE		DEFAULT NULL,
+   dateFin	DATE		DEFAULT NULL,
+   photo	VARCHAR(100)	DEFAULT NULL,
+   constraint dateDebut_is_smaller_than_dateFin check(dateDebut <= dateFin),
 
    PRIMARY KEY (num_pers)
 
 )ENGINE=INNODB;
+
+delimiter //
+CREATE TRIGGER personne_before_insert BEFORE INSERT ON personne
+FOR EACH ROW
+BEGIN
+	IF NEW.dateDebut >= NEW.dateFin THEN
+		SIGNAL SQLSTATE '23000'
+		   SET MESSAGE_TEXT = 'Error: check constraint (personne.dateDebut <= personne.dateFin) failed.';
+	END IF;
+END;
+
+CREATE TRIGGER personne_before_update BEFORE UPDATE ON personne
+FOR EACH ROW
+BEGIN
+	IF NEW.dateDebut >= NEW.dateFin THEN
+		SIGNAL SQLSTATE '23000'
+		   SET MESSAGE_TEXT = 'Error: check constraint (personne.dateDebut <= personne.dateFin) failed.';
+	END IF;
+END//
+delimiter ;
+
 
 #DROP TABLE IF EXISTS badge;
 
@@ -96,6 +121,27 @@ CREATE TABLE badge
    PRIMARY KEY (num_badge, num_pers)
 
 )ENGINE=INNODB;
+
+delimiter //
+CREATE TRIGGER badge_before_insert BEFORE INSERT ON badge
+FOR EACH ROW
+BEGIN
+	IF NEW.estActif NOT BETWEEN 0 and 1 THEN
+		SIGNAL SQLSTATE '23000'
+		SET MESSAGE_TEXT = 'Error: check constraint (badge.estActif BETWEEN 0 and 1) failed.';
+	END IF;
+END;
+
+CREATE TRIGGER badge_before_update BEFORE UPDATE ON badge
+FOR EACH ROW
+BEGIN
+	IF NEW.estActif NOT BETWEEN 0 and 1 THEN
+		SIGNAL SQLSTATE '23000'
+		SET MESSAGE_TEXT = 'Error: check constraint (badge.estActif BETWEEN 0 and 1) failed.';
+	END IF;
+END//
+delimiter ;
+
 
 #DROP TABLE IF EXISTS zone;
 
@@ -133,8 +179,6 @@ CREATE TABLE super
    PRIMARY KEY (config)
 
 )ENGINE=INNODB;
-
-
 
 -- Interdiction de supprimer un lieu auquel une zone est liée
 -- Un lieu modifié est aussi modifié dans zone
@@ -185,14 +229,13 @@ INSERT INTO representationLieuSurVue (num_vue, num_lieu, num_zone, x, y, xA, yA,
   (2, 2, 23, 220, 128, 200, 190, 40, 190),
   (2, 3, 3, 60, 28, 40, 190, 41, 10);
 
-
-INSERT INTO personne (nom, prenom, societe, dateDebut, dateFin, num_pers, photo) VALUES
-  ('scherer', 'nicolas', 'LAB', '0000-00-00', '0000-00-00', 1, 'ressources/supprimer.png'),
-  ('dada', 'dodo', 'didi', '2013-05-01', '2013-05-29', 2, '');
+INSERT INTO personne (num_pers, nom, prenom, societe, dateDebut, dateFin, photo) VALUES
+  (1, 'prenom1', 'nom1', NULL, NULL, NULL, NULL),
+  (2, 'prenom2', 'nom2', NULL, '2013-05-01', '2013-05-29', NULL);
 
 
 INSERT INTO badge (num_badge, num_pers, dateMiseEnService, dateChangePile, estActif) VALUES
-  (01, 1, 0, 0, 0);
+  (1, 1, 0, 0, 0);
 
 INSERT INTO zone (num_zone, num_lieu,sensMonter, legende) VALUES
   (1, 1, 2, "reception uniquement lecteur 1"),
