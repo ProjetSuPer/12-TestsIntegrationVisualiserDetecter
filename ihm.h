@@ -41,7 +41,7 @@ private:
 
     QList<T_ListeLabel *> listeLabel;
 
-    int calculerMoyenne(T_ListeLabel *tll); //calculer moyenne sensibilitÃ©
+    int calculerMoyenne(T_ListeLabel *tll); //calculer moyenne sensibilité
     bool sensDePassage(T_ListeLabel *tll);  //sens de passage
     void calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *pointF);    //calcul position exacte
 
@@ -51,12 +51,14 @@ private:
     Bdd *pBdd;
     Server* _server;
 
+    T_ListeLabel *tll;  //pointeur sur structure
+
 signals:
     void signalHommeEnDanger(QString &);    //alarme homme en danger
-    void signalPerteReception(int numBadge, int numLecteur, T_ListeLabel *);    //perte de rÃ©ception
+    void signalPerteReception(int numBadge, int numLecteur, T_ListeLabel *);    //perte de réception
 
 public slots:
-    //liÃ© Ã  la connexion/dÃ©connexion des lecteurs
+    //lié à la connexion/déconnexion des lecteurs
     void lecteurActif(Reader Lecteur);
     void lecteurInactif(int);
     void lecteurInconnu(QString);
@@ -66,13 +68,13 @@ public slots:
 
     //timer mouvement (homme en danger)
     void timerMouv();
-    //timer rÃ©ception (perte de badge)
+    //timer réception (perte de badge)
     void timerRec();
 
 private slots:
     //homme en danger (alarme)
     void hommeEnDanger(QString &);
-    //perte de rÃ©ception
+    //perte de réception
     void perteReception(int, int, T_ListeLabel *);
 
     void addressLineEdit_textEdited(QString);

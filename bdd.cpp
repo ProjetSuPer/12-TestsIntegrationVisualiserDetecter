@@ -99,7 +99,7 @@ void Bdd::setLog(int typeLog, int numBadge){
             query->bindValue(":dateLog", dateLog);
             query->bindValue(":legende", legende);
             if(!query->exec())
-                qDebug() << "Erreur requete SQL ajout Log" << endl;
+                qDebug() << "Erreur requete SQL ajout Log cas 3" << endl;
             break;
 
         default :   //pas de typeLog ? cas impossible

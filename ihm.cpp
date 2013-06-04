@@ -150,10 +150,10 @@ bool Ihm::traitementTrame(QString trame){
         ui->lbActivite->setEnabled(false);
     else
         ui->lbActivite->setEnabled(true);
+qDebug() << "[1] dans traitement";
 
     //décodage trame
     QString num_badge, sens, mouvement, num_lecteur;
-    T_ListeLabel *tll;  //pointeur sur structure
 
     //séparation des parties de la trame
     num_badge = trame.mid(3,3); //numéro de badge
@@ -332,6 +332,7 @@ bool Ihm::traitementTrame(QString trame){
 
             //affichage
             tll->labelB[num_vue][num_badge_i]->setEnabled(true);
+            tll->labelB[num_vue][num_badge_i]->setVisible(true);
 
             //en fonction de l'état
             switch(tll->etat) {
@@ -468,6 +469,7 @@ bool Ihm::traitementTrame(QString trame){
 
     pBdd->setBadgeActif(num_badge_i);      //le badge n'est pas perdu
     return true;
+
 }
 
 
@@ -595,19 +597,19 @@ void Ihm::timerRec() {
             if (tll->tpsSens[num_lecteur])
                 //
                 if (!tll->tpsSens[num_lecteur]->isActive() && pBdd->getEtatLect(num_lecteur)) {
-                    ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<ALARME> Perte de réception du badge ")+ QString("%1").arg(tll->numBadge,0,16));
+                    ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<ALARME> Perte de réception du badge ")+ QString("%1").arg(tll->numBadge,0,16)+"\n");
                     //Historique des événements (log) : perte réception
                     pBdd->setLog(2, i); //2=perte de réception
                     //signal perte de réception
                     emit signalPerteReception(tll->numBadge, num_lecteur, tll);
 
-                    //arrÃªt du timer de mouvement
+                    //arrêt du timer de mouvement
                     tll->tpsMouv->stop();
                     //mise à jour état
                     tll->etat |= REC;
                     //perte du badge dans BDD
                     pBdd->setBadgePerdu(tll->numBadge);
-                    //mise Ã  jour tableaux pour sens de passage
+                    //mise à jour tableaux pour sens de passage
                     tll->sdp[num_lecteur] = 0;
                     tll->sdpMem[num_lecteur] = 0;
                 }
@@ -888,9 +890,7 @@ void Ihm::server_newConnection(const ClientConnection&cC)
 
     connect(&cC, SIGNAL(sig_isAReader(Reader)), this, SLOT(lecteurActif(Reader))); //lecteur connecté
     connect(&cC, SIGNAL(sig_isNotAReader(QString)), this, SLOT(lecteurInconnu(QString))); //lecteur (ou autre chose) inconnu
-   // connect(&cC, SIGNAL(sig_dataRead(QString)), this, SLOT(traitementTrame(QString)));    //données
-   // connect(&cC, SIGNAL(sig_closed()), SLOT(slot_closed()));  //débranché
-   // connect(&cC, SIGNAL(destroyed()), SLOT(slot_destroyed()));
+    connect(&cC, SIGNAL(sig_frameReceived(QString)), this, SLOT(traitementTrame(QString)));  //données tag
 
    // cC.connect(this, SIGNAL(sig_closeConnection()), SLOT(close()));
 }
