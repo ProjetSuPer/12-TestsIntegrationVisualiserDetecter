@@ -39,7 +39,7 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -209,8 +209,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>10</y>
+      <x>80</x>
+      <y>20</y>
       <width>191</width>
       <height>21</height>
      </rect>
@@ -231,8 +231,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>0</y>
+      <x>40</x>
+      <y>10</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -244,114 +244,127 @@
      <pixmap>ressources/activite_vert.png</pixmap>
     </property>
    </widget>
-   <widget class="QLineEdit" name="addressLineEdit">
+   <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>366</x>
-      <y>30</y>
-      <width>110</width>
-      <height>22</height>
+      <x>440</x>
+      <y>0</y>
+      <width>381</width>
+      <height>61</height>
      </rect>
     </property>
-    <property name="text">
-     <string notr="true">127.0.0.254</string>
+    <property name="title">
+     <string>Réglage du Serveur</string>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="onPushButton">
-    <property name="geometry">
-     <rect>
-      <x>305</x>
-      <y>1</y>
-      <width>57</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>On</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="portLabel">
-    <property name="geometry">
-     <rect>
-      <x>480</x>
-      <y>30</y>
-      <width>45</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Port :</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="killAllComPushButton">
-    <property name="geometry">
-     <rect>
-      <x>366</x>
-      <y>1</y>
-      <width>110</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Close all com.</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="portSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>529</x>
-      <y>30</y>
-      <width>133</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="maximum">
-     <number>65535</number>
-    </property>
-    <property name="value">
-     <number>43210</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="addressLabel">
-    <property name="geometry">
-     <rect>
-      <x>305</x>
-      <y>30</y>
-      <width>57</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Address :</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="offPushButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>480</x>
-      <y>1</y>
-      <width>45</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:red;</string>
-    </property>
-    <property name="text">
-     <string>Off</string>
-    </property>
+    <widget class="QLabel" name="addressLabel">
+     <property name="geometry">
+      <rect>
+       <x>15</x>
+       <y>40</y>
+       <width>57</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Address :</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="portLabel">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>40</y>
+       <width>45</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Port :</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="portSpinBox">
+     <property name="geometry">
+      <rect>
+       <x>239</x>
+       <y>40</y>
+       <width>133</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>65535</number>
+     </property>
+     <property name="value">
+      <number>43210</number>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="addressLineEdit">
+     <property name="geometry">
+      <rect>
+       <x>76</x>
+       <y>40</y>
+       <width>110</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">127.0.0.254</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="onPushButton">
+     <property name="geometry">
+      <rect>
+       <x>15</x>
+       <y>20</y>
+       <width>57</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>On</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="killAllComPushButton">
+     <property name="geometry">
+      <rect>
+       <x>76</x>
+       <y>20</y>
+       <width>110</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Close all com.</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="offPushButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>20</y>
+       <width>45</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:red;</string>
+     </property>
+     <property name="text">
+      <string>Off</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

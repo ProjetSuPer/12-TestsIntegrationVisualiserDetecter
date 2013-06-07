@@ -53,6 +53,9 @@ private:
 
     T_ListeLabel *tll;  //pointeur sur structure
 
+    //traitement de la trame
+    bool traitementTrame(QString trame);
+
 signals:
     void signalHommeEnDanger(QString &);    //alarme homme en danger
     void signalPerteReception(int numBadge, int numLecteur, T_ListeLabel *);    //perte de réception
@@ -64,7 +67,7 @@ public slots:
     void lecteurInconnu(QString);
 
     //traitement de la trame
-    bool traitementTrame(QString trame);
+    void trameRecu(QString trame);
 
     //timer mouvement (homme en danger)
     void timerMouv();

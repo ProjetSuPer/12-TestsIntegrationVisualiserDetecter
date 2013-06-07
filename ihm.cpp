@@ -139,10 +139,18 @@ void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
         } //fin for
     } //fin if
 }
+//slot tag reçu
+//pour débuger
+void Ihm::trameRecu(QString trame){
+    bool traitement = this->traitementTrame(trame);
+    if(!traitement)
+        qDebug() << "trame rejet";
+}
 
-/*-------------------------------*
- * Slot traitement de la trame   *
- *-------------------------------*/
+
+/*----------------------------------*
+ * Méthode traitement de la trame   *
+ *----------------------------------*/
 bool Ihm::traitementTrame(QString trame){
 
     //témoin timer affichage
@@ -219,9 +227,9 @@ qDebug() << "[1] dans traitement";
 
                 //nouveau label dynamique pour un badge
                 tll->labelB[num_vue][num_badge_i] = new QLabel(onglet);
-
-                //réglage par défaut du nouveau badge (vert + haut)
-                tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_vert.jpg"));
+//modif
+                //réglage par défaut du nouveau badge
+                tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/DefaultConfigure.png"));
                 tll->labelB[num_vue][num_badge_i]->setGeometry(590, 620, 15, 42); // largeur hauteur Ã  définir
             }
         }
@@ -314,7 +322,7 @@ qDebug() << "[1] dans traitement";
     }
 
     //Obtenir les points de la zone en fonction des vues
-
+qDebug() << "[2] avant placement";
     //obtenir vue(s) en fonction du lecteur
     //déclaration QList
     QList<T_TupleLecteurS> listeTupleL;
@@ -323,17 +331,18 @@ qDebug() << "[1] dans traitement";
 
     if (!listeTupleL.empty()){
         for (int i = 0; i < listeTupleL.count(); i++) {
-
+qDebug() << "[2.1] dans liste";
             int num_vue = listeTupleL.at(i).num_vue;
 
             pBdd->getPointsZone(num_vue, tll->zone, &tll->ptA, &tll->ptB);
 
             this->calculerDroite(moy, tll->ptA, tll->ptB, &tll->ptBadge[num_vue]);
-
+qDebug() << "[2.2] calcul effectuer";
             //affichage
             tll->labelB[num_vue][num_badge_i]->setEnabled(true);
             tll->labelB[num_vue][num_badge_i]->setVisible(true);
-
+qDebug() << "[3] pas de probleme avec tll";
+/*
             //en fonction de l'état
             switch(tll->etat) {
             case 0:  // ALLER
@@ -441,7 +450,7 @@ qDebug() << "[1] dans traitement";
                 tll->labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             } //fin switch
-
+*/
             //affichage position exacte badge
             if (num_vue==1 && num_pers==1)  //taille petite, pas de décalement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,15,20);
@@ -531,6 +540,7 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
         }
         //RSSI plus grand donc aller
         if (tll->sdp[tll->numLecteur] > tll->sdpMem[tll->numLecteur]){
+//modif            tll->etat |= AR;
             tll->etat |= AR;
             tll->sdpMem[tll->numLecteur] = tll->sdp[tll->numLecteur];   //sauvegarde
         }
@@ -890,7 +900,7 @@ void Ihm::server_newConnection(const ClientConnection&cC)
 
     connect(&cC, SIGNAL(sig_isAReader(Reader)), this, SLOT(lecteurActif(Reader))); //lecteur connecté
     connect(&cC, SIGNAL(sig_isNotAReader(QString)), this, SLOT(lecteurInconnu(QString))); //lecteur (ou autre chose) inconnu
-    connect(&cC, SIGNAL(sig_frameReceived(QString)), this, SLOT(traitementTrame(QString)));  //données tag
+    connect(&cC, SIGNAL(sig_frameReceived(QString)), this, SLOT(trameRecu(QString)));  //données tag
 
    // cC.connect(this, SIGNAL(sig_closeConnection()), SLOT(close()));
 }
