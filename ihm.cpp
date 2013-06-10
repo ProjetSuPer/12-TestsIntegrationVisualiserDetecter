@@ -2,13 +2,6 @@
 #include "ui_ihm.h"
 #include "contenuonglet.h"
 #include "server.h"
-#include <QtSql>
-#include <QString>
-#include <QDebug>
-#include <QMessageBox>
-#include <QLabel>
-#include <QToolTip>
-
 
 //////////////////////
 /*** CONSTRUCTEUR ***/
@@ -90,6 +83,9 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     //6A7 mouvement
     //01 nÂ° lecteur
 
+    //Alarmes pour affichage du plus récent au plus ancien
+    curseur = ui->txtAlarme->textCursor(); //Récupération du QTextCursor de la zone de texte
+    position = curseur.position(); //Récupération de sa position
 }
 ////////////
 //
@@ -107,6 +103,8 @@ void Ihm::setTempo(int tempoMouv, int tempoRec){
 void Ihm::hommeEnDanger(QString & nom){
     //affichage texte alarme
     ui->txtAlarme->textCursor().insertText("<ALARME> "+ nom + " est en danger ! Aucun mouvement.\n");
+    curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+    ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 }
 //////
 //SLOT perte réception
@@ -170,6 +168,8 @@ qDebug() << "[1] dans traitement";
     if(num_badge == "000") {
         qDebug("Mauvais badge.");
         ui->txtAlarme->textCursor().insertText("<Erreur> Mauvais badge num=000\n");
+        curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+        ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
         return false;
     }
 
@@ -187,6 +187,8 @@ qDebug() << "[1] dans traitement";
     //si le badge n'existe pas dans la BDD
     if(!pBdd->badgeExiste(num_badge)){
         ui->txtAlarme->textCursor().insertText("<Erreur><Badge "+num_badge+QString::fromUtf8("> Badge inconnu  dans la Base de données\n"));
+        curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+        ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
         return false;
     }
 
@@ -288,6 +290,8 @@ qDebug() << "[1] dans traitement";
     if (num_pers == -1){
         //le badge n'est pas lié avec une personne
         ui->txtAlarme->textCursor().insertText("<Erreur><Badge "+num_badge+QString::fromUtf8("> Badge non lié à une personne\n"));
+        curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+        ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
     } else {
         tll->nom[num_pers] = listePersonne.at(0).nom;
         tll->prenom[num_pers] = listePersonne.at(0).prenom;
@@ -311,6 +315,8 @@ qDebug() << "[1] dans traitement";
         //pas de sens de passage
         qDebug("pas de sens de passage dans BDD");
         ui->txtAlarme->textCursor().insertText("<Erreur><Lecteur "+num_lecteur+ QString::fromUtf8("> Pas de sens de passage précisé dans la Base de Données\n"));
+        curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+        ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
         return false;
     }
 
@@ -318,6 +324,8 @@ qDebug() << "[1] dans traitement";
     if (!pBdd->getEtatLect(num_lecteur_i)){
         qDebug("le lecteur n'est pas connecte ?!");
         ui->txtAlarme->textCursor().insertText("<Erreur><Lecteur "+num_lecteur+QString::fromUtf8("> Lecteur non connecté\n"));
+        curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+        ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
         return false;
     }
 
@@ -608,6 +616,8 @@ void Ihm::timerRec() {
                 //
                 if (!tll->tpsSens[num_lecteur]->isActive() && pBdd->getEtatLect(num_lecteur)) {
                     ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<ALARME> Perte de réception du badge ")+ QString("%1").arg(tll->numBadge,0,16)+"\n");
+                    curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+                    ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
                     //Historique des événements (log) : perte réception
                     pBdd->setLog(2, i); //2=perte de réception
                     //signal perte de réception
@@ -655,6 +665,8 @@ Ihm::~Ihm()
 void Ihm::lecteurInconnu(QString ip){
     //ajout texte Ihm
     ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<Erreur> Quelque chose a tenté de se connecter. Son IP: ")+ip+" \n");
+    curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+    ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 }
 //////////////////////////////
 /*** SLOT LECTEUR INACTIF ***/
@@ -686,7 +698,8 @@ void Ihm::suppLecteur(int numLecteur, int num_vue){
     supLecteur += numVueS;
     supLecteur += QString::fromUtf8("> vient de se déconnecter");
     ui->txtAlarme->textCursor().insertText(supLecteur + "\n");
-
+    curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+    ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 }
 ////////////////////////////
 /*** SLOT LECTEUR ACTIF ***/
@@ -756,6 +769,8 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
     ajLecteur += numVueE;
     ajLecteur += QString::fromUtf8("> vient de se connecter");
     ui->txtAlarme->textCursor().insertText(ajLecteur + "\n");
+    curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
+    ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 
     //sauvegarde du pointeur du label du lecteur //PLUS besoin
     //pDynamique->labelL[num_vue][numLecteur] = labelL;

@@ -2,6 +2,14 @@
 #define IHM_H
 
 #include <QMainWindow>
+#include <QtSql>
+#include <QString>
+#include <QDebug>
+#include <QMessageBox>
+#include <QLabel>
+#include <QToolTip>
+#include <QTextCursor>
+#include <QSound>
 
 #include "dynamique.h"
 #include "bdd.h"
@@ -56,6 +64,10 @@ private:
     //traitement de la trame
     bool traitementTrame(QString trame);
 
+    //affichage Alarmes
+    QTextCursor curseur; //Récupération du QTextCursor de la zone de texte
+    int position; //Récupération de sa position
+
 signals:
     void signalHommeEnDanger(QString &);    //alarme homme en danger
     void signalPerteReception(int numBadge, int numLecteur, T_ListeLabel *);    //perte de réception
@@ -93,3 +105,4 @@ private slots:
 };
 
 #endif // IHM_H
+
