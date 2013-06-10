@@ -3,8 +3,9 @@
 #include "contenuonglet.h"
 #include "server.h"
 
-//////////////////////
-/*** CONSTRUCTEUR ***/
+/*----------------*
+ *  Constructeur  *
+ *----------------*/
 Ihm::Ihm(Server *server, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Ihm)
@@ -12,31 +13,6 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     ui->setupUi(this);
     pDynamique = new Dynamique;
     pBdd = new Bdd;
-
-    _server = server;
-    ui->addressLineEdit->setText(server->address());
-    ui->portSpinBox->setValue(server->port());
-
-    connect(ui->onPushButton, SIGNAL(clicked()), this, SLOT(onPushButton_clicked()));
-    connect(ui->offPushButton, SIGNAL(clicked()), _server, SLOT(switchOff()));
-
-    connect(ui->addressLineEdit, SIGNAL(textChanged(QString)), this, SLOT(addressLineEdit_textEdited(QString)));
-    connect(ui->portSpinBox, SIGNAL(valueChanged(QString)), _server, SLOT(setPort(QString)));
-
-    connect(server, SIGNAL(sig_switchedOn()), this, SLOT(server_switchedOn()));
-    connect(server, SIGNAL(sig_switchedOff()), this, SLOT(server_switchedOff()));
-    connect(server, SIGNAL(sig_switchedOffOnError(QString)), this, SLOT(server_switchedOffOnError(QString)));
-
-    connect(server, SIGNAL(sig_addressChanged(QString)), this, SLOT(server_addressChanged(QString)));
-    connect(server, SIGNAL(sig_portChanged(quint16)), this, SLOT(server_portChanged(quint16)));
-
-    connect(server, SIGNAL(sig_newConnection(const ClientConnection&)), this, SLOT(server_newConnection(const ClientConnection&)));
-
-
-    //réception signal homme en danger
-    connect(this, SIGNAL(signalHommeEnDanger(QString &)), this, SLOT(hommeEnDanger(QString &)));
-    //réception signal perte réceptin
-    connect(this, SIGNAL(signalPerteReception(int, int, T_ListeLabel *)), this, SLOT(perteReception(int, int, T_ListeLabel *)));
 
     //obtention du nombre de vue max
     int vueMax = pBdd->getVueMax();
@@ -70,6 +46,37 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     pBdd->getTempo(&tempoMouv, &tempoRec);
     this->setTempo(tempoMouv, tempoRec);
 
+    //Alarmes pour affichage du plus récent au plus ancien
+    curseur = ui->txtAlarme->textCursor(); //Récupération du QTextCursor de la zone de texte
+    position = curseur.position(); //Récupération de sa position
+
+    _server = server;
+    ui->addressLineEdit->setText(server->address());
+    ui->portSpinBox->setValue(server->port());
+
+    connect(ui->onPushButton, SIGNAL(clicked()), this, SLOT(onPushButton_clicked()));
+    connect(ui->offPushButton, SIGNAL(clicked()), _server, SLOT(switchOff()));
+
+    connect(ui->addressLineEdit, SIGNAL(textChanged(QString)), this, SLOT(addressLineEdit_textEdited(QString)));
+    connect(ui->portSpinBox, SIGNAL(valueChanged(QString)), _server, SLOT(setPort(QString)));
+
+    connect(server, SIGNAL(sig_switchedOn()), this, SLOT(server_switchedOn()));
+    connect(server, SIGNAL(sig_switchedOff()), this, SLOT(server_switchedOff()));
+    connect(server, SIGNAL(sig_switchedOffOnError(QString)), this, SLOT(server_switchedOffOnError(QString)));
+
+    connect(server, SIGNAL(sig_addressChanged(QString)), this, SLOT(server_addressChanged(QString)));
+    connect(server, SIGNAL(sig_portChanged(quint16)), this, SLOT(server_portChanged(quint16)));
+
+    connect(server, SIGNAL(sig_newConnection(const ClientConnection&)), this, SLOT(server_newConnection(const ClientConnection&)));
+
+
+    //réception signal homme en danger
+    connect(this, SIGNAL(signalHommeEnDanger(QString &)), this, SLOT(hommeEnDanger(QString &)));
+    //réception signal perte réceptin
+    connect(this, SIGNAL(signalPerteReception(int, int, T_ListeLabel *)), this, SLOT(perteReception(int, int, T_ListeLabel *)));
+
+
+
 
    // lecteurActif(pLecteur);     // Ã  enlever Ã  l'intÃ©gration
    // lecteurInactif(pLecteur);   // Ã  enlever Ã  l'intÃ©gration
@@ -82,33 +89,75 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     //DO1 nÂ° de badge
     //6A7 mouvement
     //01 nÂ° lecteur
-
-    //Alarmes pour affichage du plus récent au plus ancien
-    curseur = ui->txtAlarme->textCursor(); //Récupération du QTextCursor de la zone de texte
-    position = curseur.position(); //Récupération de sa position
 }
-////////////
-//
-///////////
+/*-------------*
+ * Destructeur *
+ *-------------*/
+Ihm::~Ihm()
+{
+    //déclaration QList
+    QList<T_Badge> listeBadge;
+
+    //récupération des infos sur les onglets
+    pBdd->badgeExistant(&listeBadge);
+
+    if(!listeBadge.empty()){
+        for(int i = 0; i < listeBadge.count(); i++) {
+            int num_badge = listeBadge.at(i).numBadge;
+
+            //mettre badge inactif
+            pBdd->setBadgePerdu(num_badge);
+        }
+    }
+    //destruction listeLabel
+    while (!listeLabel.empty()){
+        T_ListeLabel *tll = listeLabel.takeFirst();
+        for(int i=0 ; i<MAXONGLETS ; i++){
+            for(int j=0 ; j<MAXBADGES ; j++){
+                if(tll->labelB[i][j]){
+                    delete tll->labelB[i][j];
+                }
+            }
+        }
+        delete tll->tpsMouv;
+        for(int k=0 ; k<MAXLECTEURS ; k++){
+            if (tll->tpsSens[k])
+                delete tll->tpsSens[k];
+        }
+        delete tll;
+        delete listeLabel.takeFirst();
+    }
+
+    //destruction pointeurs
+    delete pDynamique;
+    delete pBdd;
+    //destruction ihm
+    delete ui;
+}
+/*--------------------------------*
+ * Méthode                        *
+ * Mise en place temps pour Timer *
+ *--------------------------------*/
 void Ihm::setTempo(int tempoMouv, int tempoRec){
 
     this->tempoM = tempoMouv;
     this->tempoR = tempoRec;
 
 }
-
-///////
-//SLOT homme en danger
-///////
+/*-----------------*
+ * SLOT            *
+ * Homme en danger *
+ *-----------------*/
 void Ihm::hommeEnDanger(QString & nom){
     //affichage texte alarme
     ui->txtAlarme->textCursor().insertText("<ALARME> "+ nom + " est en danger ! Aucun mouvement.\n");
     curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
     ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 }
-//////
-//SLOT perte réception
-//////
+/*-----------------*
+ * SLOT            *
+ * Perte réception *
+ *-----------------*/
 void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
 
 
@@ -137,8 +186,10 @@ void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
         } //fin for
     } //fin if
 }
-//slot tag reçu
-//pour débuger
+/*-----------------------*
+ * SLOT                  *
+ * Tag reçu ; pour debug *
+ *-----------------------*/
 void Ihm::trameRecu(QString trame){
     bool traitement = this->traitementTrame(trame);
     if(!traitement)
@@ -232,7 +283,7 @@ qDebug() << "[1] dans traitement";
 //modif
                 //réglage par défaut du nouveau badge
                 tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/DefaultConfigure.png"));
-                tll->labelB[num_vue][num_badge_i]->setGeometry(590, 620, 15, 42); // largeur hauteur Ã  définir
+                tll->labelB[num_vue][num_badge_i]->setGeometry(590, 620, 20, 20); // largeur hauteur à définir
             }
         }
 
@@ -257,11 +308,14 @@ qDebug() << "[1] dans traitement";
 
         //maintenant le badge existe sur l'IHM donc le sauvegarder
         pDynamique->BadgeActif[num_badge_i] = true;
+
     }
 
     tll->numLecteur = num_lecteur_i;    //sauvegarde numéro lecteur
 
     tll->etat |= MOUV0;   // mouv=0
+//modif
+   // tll->etat ^= MOUV0;
     //relance du timer si mouvement
     if (mouvement_i > 0 ) {  // si mouvement
         tll->etat &= ~MOUV;    // alarme mouvement
@@ -339,18 +393,18 @@ qDebug() << "[2] avant placement";
 
     if (!listeTupleL.empty()){
         for (int i = 0; i < listeTupleL.count(); i++) {
-qDebug() << "[2.1] dans liste";
+
             int num_vue = listeTupleL.at(i).num_vue;
 
             pBdd->getPointsZone(num_vue, tll->zone, &tll->ptA, &tll->ptB);
 
             this->calculerDroite(moy, tll->ptA, tll->ptB, &tll->ptBadge[num_vue]);
-qDebug() << "[2.2] calcul effectuer";
+
             //affichage
             tll->labelB[num_vue][num_badge_i]->setEnabled(true);
             tll->labelB[num_vue][num_badge_i]->setVisible(true);
-qDebug() << "[3] pas de probleme avec tll";
-/*
+
+
             //en fonction de l'état
             switch(tll->etat) {
             case 0:  // ALLER
@@ -458,12 +512,12 @@ qDebug() << "[3] pas de probleme avec tll";
                 tll->labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             } //fin switch
-*/
+
             //affichage position exacte badge
             if (num_vue==1 && num_pers==1)  //taille petite, pas de décalement
-                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,15,20);
+                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,20,20);
             else if (num_vue==1 && num_pers!=1) //taile petite, décalement
-                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (15*num_pers), tll->ptBadge[num_vue].y,15,20);
+                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (15*num_pers), tll->ptBadge[num_vue].y,20,20);
 
             else if (num_vue!=1 && num_pers==1) //taille grande, pas de décalement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,30,20);
@@ -477,7 +531,7 @@ qDebug() << "[3] pas de probleme avec tll";
                                                              + tll->nom[num_pers] +" "  + tll->prenom[num_pers]
                                                              +QString::fromUtf8(" Société : ")+ tll->societe[num_pers]);
 
-            } else { //badge pas affectÃ©
+            } else { //badge pas affecté
                 tll->labelB[num_vue][num_badge_i]->setToolTip(QString::fromUtf8("Badge non affecté à une personne"));
             }
 
@@ -488,9 +542,10 @@ qDebug() << "[3] pas de probleme avec tll";
     return true;
 
 }
-
-
-///////////////////////////////////////////////////////////////
+/*---------------------------*
+ * Méthode                   *
+ * Calcul droite et Position *
+ *---------------------------*/
 void Ihm::calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *pointF)
 {
     //pas de calcul, les points correspondent Ã  la droite (uniquement vue 1)
@@ -513,8 +568,10 @@ void Ihm::calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *poin
     }
 
 }
-
-///////////////////////////////////////////////////////////////
+/*------------------------*
+ * Méthode                *
+ * Calcul sens de passage *
+ *------------------------*/
 bool Ihm::sensDePassage(T_ListeLabel *tll)
 {
     int sensMonter = pBdd->getSensMonter(tll->numLecteur);
@@ -543,13 +600,14 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
 
         //RSSSI plus petit donc retour
         if (tll->sdp[tll->numLecteur] < tll->sdpMem[tll->numLecteur]){
-            tll->etat &= ~AR;
+//            tll->etat &= ~AR;
+            tll->etat |= AR;
             tll->sdpMem[tll->numLecteur] = tll->sdp[tll->numLecteur];   //sauvegarde
         }
         //RSSI plus grand donc aller
         if (tll->sdp[tll->numLecteur] > tll->sdpMem[tll->numLecteur]){
 //modif            tll->etat |= AR;
-            tll->etat |= AR;
+            tll->etat &= ~AR;
             tll->sdpMem[tll->numLecteur] = tll->sdp[tll->numLecteur];   //sauvegarde
         }
 
@@ -576,24 +634,23 @@ bool Ihm::sensDePassage(T_ListeLabel *tll)
     }
 
 }
-
-
-///////////////////////////////////////////////////////////////
-int Ihm::calculerMoyenne(T_ListeLabel *tll)
-{
-    // calcul de la moyenne de la sensibilitÃ©
+/*---------------------------*
+ * Méthode                   *
+ * Calcul Moyenne réception  *
+ *---------------------------*/
+int Ihm::calculerMoyenne(T_ListeLabel *tll){
+    // calcul de la moyenne de la sensibilitée
     int sumMoy=0;
     for (int i=0 ; i<MAXVAL ; i++)
         sumMoy += tll->moySens[tll->numLecteur][i];
     return sumMoy / MAXVAL;
 
-} // method
-
-
-
-
-///////////////////////////////////////////////////////////
-void Ihm::timerMouv() {
+}
+/*--------------------*
+ * Méthode            *
+ * Timer de mouvement *
+ *--------------------*/
+void Ihm::timerMouv(){
     T_ListeLabel *tll;
     int nbB = listeLabel.size();
     for (int i=0 ; i<nbB ; i++) {
@@ -604,8 +661,11 @@ void Ihm::timerMouv() {
         }
     }
 }
-///////////////////////////////////////////////////////////
-void Ihm::timerRec() {
+/*--------------------*
+ * Méthode            *
+ * Timer de réception *
+ *--------------------*/
+void Ihm::timerRec(){
     T_ListeLabel *tll;
     int nbB = listeLabel.size();
     //parcours des badges
@@ -636,40 +696,20 @@ void Ihm::timerRec() {
         }
     }
 }
-
-/////////////////////
-/*** DESTRUCTEUR ***/
-Ihm::~Ihm()
-{
-    //déclaration QList
-    QList<T_Badge> listeBadge;
-
-    //récupération des infos sur les onglets
-    pBdd->badgeExistant(&listeBadge);
-
-    if(!listeBadge.empty()){
-        for(int i = 0; i < listeBadge.count(); i++) {
-            int num_badge = listeBadge.at(i).numBadge;
-
-            //mettre badge inactif
-            pBdd->setBadgePerdu(num_badge);
-        }
-    }
-
-    delete pDynamique;
-    delete pBdd;
-    delete ui;
-}
-//////////////////////////////
-/*** SLOT LECTEUR INCONNU ***/
+/*-----------------*
+ * SLOT            *
+ * Lecteur inconnu *
+ *-----------------*/
 void Ihm::lecteurInconnu(QString ip){
     //ajout texte Ihm
     ui->txtAlarme->textCursor().insertText(QString::fromUtf8("<Erreur> Quelque chose a tenté de se connecter. Son IP: ")+ip+" \n");
     curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
     ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 }
-//////////////////////////////
-/*** SLOT LECTEUR INACTIF ***/
+/*-----------------*
+ * SLOT            *
+ * Lecteur inactif *
+ *-----------------*/
 void Ihm::lecteurInactif(int numLecteur){
     //déclaration QList
     QList<T_TupleLecteurS> listeTupleL;
@@ -686,8 +726,10 @@ void Ihm::lecteurInactif(int numLecteur){
     }
 
 }
-/////////////////////////////////////
-/*** méthode SUPPRESSION LECTEUR ***/
+/*---------------------*
+ * Méthode             *
+ * Suppression Lecteur *
+ *---------------------*/
 void Ihm::suppLecteur(int numLecteur, int num_vue){
     //message d'avertissement (Alarmes)
     QString numLecteurS = QString::number(numLecteur);
@@ -701,8 +743,10 @@ void Ihm::suppLecteur(int numLecteur, int num_vue){
     curseur.setPosition(position); // Replacement du curseur à l'endroit où il se trouvait
     ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 }
-////////////////////////////
-/*** SLOT LECTEUR ACTIF ***/
+/*---------------*
+ * SLOT          *
+ * Lecteur actif *
+ *---------------*/
 void Ihm::lecteurActif(Reader Lecteur){
 
     qDebug() << "SLOT lecteurActif";
@@ -737,8 +781,10 @@ void Ihm::lecteurActif(Reader Lecteur){
     connect(cCL, SIGNAL(sig_disconnected()), aA, SLOT(lecteurInactif()));
 
 }
-///////////////////////////////
-/*** méthode AJOUT LECTEUR ***/
+/*---------------*
+ * Méthode       *
+ * Ajout Lecteur *
+ *---------------*/
 void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnection *cCL){
 
     qDebug() << "ajoutLecteur : " << numLecteur << num_vue << x << y;
@@ -780,8 +826,10 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
     connect(cCL, SIGNAL(sig_disconnected()), labelL, SLOT(deleteLater()));
 
 }
-//////////////////////////////
-/*** méthode AJOUT ONGLET ***/
+/*-------------------*
+ * Méthode           *
+ * Ajout vue(onglet) *
+ *-------------------*/
 void Ihm::ajoutOnglet(int num_vue, QString legende, QString image)
 {
     //nouveau onglet dynamique avec légende
@@ -793,7 +841,7 @@ void Ihm::ajoutOnglet(int num_vue, QString legende, QString image)
   //  qDebug() << "valeur dans la classe" << pDynamique->onglet[num_vue] << endl;
 
 }
-
+///////////////////////////////////////////////////////////
 void Ihm::addressLineEdit_textEdited(QString textEdited)
 {
     QString color;
