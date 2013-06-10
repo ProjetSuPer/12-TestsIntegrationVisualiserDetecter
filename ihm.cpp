@@ -400,11 +400,14 @@ qDebug() << "[2] avant placement";
 
             this->calculerDroite(moy, tll->ptA, tll->ptB, &tll->ptBadge[num_vue]);
 
+           // tll = listeLabel.at(num_badge_i);
             //affichage
-            tll->labelB[num_vue][num_badge_i]->setEnabled(true);
+           // tll->labelB[num_vue][num_badge_i]->setEnabled(true);
             tll->labelB[num_vue][num_badge_i]->setVisible(true);
 
 
+
+qDebug() << "[3] avant état";
             //en fonction de l'état
             switch(tll->etat) {
             case 0:  // ALLER
@@ -513,6 +516,7 @@ qDebug() << "[2] avant placement";
                 break;
             } //fin switch
 
+qDebug() << "[4] avant affichage";
             //affichage position exacte badge
             if (num_vue==1 && num_pers==1)  //taille petite, pas de décalement
                 tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,20,20);
