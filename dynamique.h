@@ -60,6 +60,7 @@ public:
     /*---Pointeurs---*/
     QWidget *onglet[MAXONGLETS];    //pointeur sur l'onglet
     //QLabel *labelL[MAXONGLETS][MAXLECTEURS];    //pointeur sur le label du lecteur
+    QLabel *labelB[MAXONGLETS][MAXBADGES];  //pointeur sur le label du badge
 
     /*---Badge---*/
     bool BadgeActif[MAXBADGES];     //badge actif ou non

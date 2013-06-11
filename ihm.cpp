@@ -11,7 +11,8 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     ui(new Ui::Ihm)
 {
     ui->setupUi(this);
-    pDynamique = new Dynamique;
+    //pDynamique = new Dynamique;
+    //connect(pDynamique, SIGNAL(destroyed()), pDynamique, SLOT(deleteLater()));
     pBdd = new Bdd;
 
     //obtention du nombre de vue max
@@ -38,7 +39,6 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     ui->tabWidget->removeTab(vueMax);
     //mettre l'onglet de base dans la vue
     ui->tabWidget->setCurrentIndex(0);
-
 
     //régler les temps des timer en fonction de la base de données
     int tempoMouv; // ms tempo pour le timer mouvement
@@ -76,12 +76,6 @@ Ihm::Ihm(Server *server, QWidget *parent) :
     connect(this, SIGNAL(signalPerteReception(int, int, T_ListeLabel *)), this, SLOT(perteReception(int, int, T_ListeLabel *)));
 
 
-
-
-   // lecteurActif(pLecteur);     // Ã  enlever Ã  l'intÃ©gration
-   // lecteurInactif(pLecteur);   // Ã  enlever Ã  l'intÃ©gration
-   // lecteurInconnu();           // Ã  enlever Ã  l'intÃ©gration
-
    // traitementTrame("[F60016A703]");  //Ã  enlever Ã  l'intÃ©gration
    // traitementTrame("050026B102");  //Ã  enlever Ã  l'intÃ©gration
     //trame type : AD D01 6A7 01
@@ -109,6 +103,7 @@ Ihm::~Ihm()
             pBdd->setBadgePerdu(num_badge);
         }
     }
+
     //destruction listeLabel
     while (!listeLabel.empty()){
         T_ListeLabel *tll = listeLabel.takeFirst();
@@ -127,12 +122,26 @@ Ihm::~Ihm()
         delete tll;
         delete listeLabel.takeFirst();
     }
+    //destruction pointeur sur label badge
+
+  //  delete []pDynamique.labelB;
+//voir connect destroyed/deleteLater
+/*
+    for(int i=0 ; i<=MAXONGLETS ; i++){
+        for(int j=0 ; j<=MAXBADGES ; j++){
+            if(pDynamique.labelB[i][j] != NULL)
+                delete pDynamique.labelB[i][j];
+        }
+    }
+*/
 
     //destruction pointeurs
-    delete pDynamique;
+    //delete pDynamique;
     delete pBdd;
     //destruction ihm
     delete ui;
+
+
 }
 /*--------------------------------*
  * Méthode                        *
@@ -186,6 +195,14 @@ void Ihm::perteReception(int numBadge, int numLecteur, T_ListeLabel *tll){
         } //fin for
     } //fin if
 }
+///////MEMO////////////
+// [ADD016A701] (trame)
+//trame type : AD D01 6A7 01
+//AD niveau de reception
+//DO1 n° de badge
+//6A7 mouvement
+//01 n° lecteur
+//////////////////////
 /*-----------------------*
  * SLOT                  *
  * Tag reçu ; pour debug *
@@ -244,7 +261,7 @@ qDebug() << "[1] dans traitement";
     }
 
     //badge n'existe pas sur l'IHM
-    if(!pDynamique->BadgeActif[num_badge_i]){
+    if(!pDynamique.BadgeActif[num_badge_i]){
 
         //Historique des événements (log) : nouveau badge
         pBdd->setLog(1, num_badge_i);    //1=nouveau badge
@@ -276,11 +293,18 @@ qDebug() << "[1] dans traitement";
 
                 //se placer sur l'onglet
                 QWidget *onglet;
-                onglet = pDynamique->onglet[num_vue];
+                onglet = pDynamique.onglet[num_vue];
 
                 //nouveau label dynamique pour un badge
                 tll->labelB[num_vue][num_badge_i] = new QLabel(onglet);
+
+                //The object will be deleted when control returns to the event loop.
+                connect (tll->labelB[num_vue][num_badge_i], SIGNAL(destroyed()), tll->labelB[num_vue][num_badge_i], SLOT(deleteLater()));
+
+                //sauvegarde de ce label dans Dynamique
+                pDynamique.labelB[num_vue][num_badge_i] = tll->labelB[num_vue][num_badge_i];
 //modif
+qDebug() << pDynamique.labelB[num_vue][num_badge_i];
                 //réglage par défaut du nouveau badge
                 tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/DefaultConfigure.png"));
                 tll->labelB[num_vue][num_badge_i]->setGeometry(590, 620, 20, 20); // largeur hauteur à définir
@@ -307,7 +331,7 @@ qDebug() << "[1] dans traitement";
         listeLabel.append(tll);
 
         //maintenant le badge existe sur l'IHM donc le sauvegarder
-        pDynamique->BadgeActif[num_badge_i] = true;
+        pDynamique.BadgeActif[num_badge_i] = true;
 
     }
 
@@ -403,8 +427,8 @@ qDebug() << "[2] avant placement";
            // tll = listeLabel.at(num_badge_i);
             //affichage
            // tll->labelB[num_vue][num_badge_i]->setEnabled(true);
-            tll->labelB[num_vue][num_badge_i]->setVisible(true);
-
+           // tll->labelB[num_vue][num_badge_i]->setVisible(true);
+            pDynamique.labelB[num_vue][num_badge_i]->setVisible(true);
 
 
 qDebug() << "[3] avant état";
@@ -413,17 +437,17 @@ qDebug() << "[3] avant état";
             case 0:  // ALLER
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_vert.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_vert.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_vert.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_vert.jpg"));
                 }
                 break;
             case 1:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
@@ -431,25 +455,25 @@ qDebug() << "[3] avant état";
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 2:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 3:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 4:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_vert.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_vert.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_vert.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_vert.jpg"));
                 }
                 break;
             case 5:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
@@ -457,25 +481,25 @@ qDebug() << "[3] avant état";
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 6:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 7:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 8:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_orange.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_orange.jpg"));
                 }
                 break;
             case 9:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/haut_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
@@ -483,25 +507,25 @@ qDebug() << "[3] avant état";
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 10:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 11:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 12:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_orange.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_orange.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_orange.jpg"));
                 }
                 break;
             case 13:
                 if (num_vue == 1 || tll->zone == -1){
                     //pas de sens de passage
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/pers_rouge.jpg"));
                 } else {
-                    tll->labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_rouge.jpg"));
+                    pDynamique.labelB[num_vue][num_badge_i]->setPixmap(QPixmap("ressources/bas_rouge.jpg"));
                 }
                 //homme en danger
                 emit signalHommeEnDanger(tll->nom[num_pers]);
@@ -509,34 +533,34 @@ qDebug() << "[3] avant état";
                 pBdd->setLog(3, num_badge_i);    //3=alarme mouvement
                 break;
             case 14:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             case 15:
-                tll->labelB[num_vue][num_badge_i]->setEnabled(false);
+                pDynamique.labelB[num_vue][num_badge_i]->setEnabled(false);
                 break;
             } //fin switch
 
 qDebug() << "[4] avant affichage";
             //affichage position exacte badge
             if (num_vue==1 && num_pers==1)  //taille petite, pas de décalement
-                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,20,20);
+                pDynamique.labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,20,20);
             else if (num_vue==1 && num_pers!=1) //taile petite, décalement
-                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (15*num_pers), tll->ptBadge[num_vue].y,20,20);
+                pDynamique.labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (10*num_pers), tll->ptBadge[num_vue].y,20,20);
 
             else if (num_vue!=1 && num_pers==1) //taille grande, pas de décalement
-                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,30,20);
+                pDynamique.labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x, tll->ptBadge[num_vue].y,30,20);
             else    //taille grande, décalement
-                tll->labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (30*num_pers), tll->ptBadge[num_vue].y,30,20);
+                pDynamique.labelB[num_vue][num_badge_i]->setGeometry(tll->ptBadge[num_vue].x + (20*num_pers), tll->ptBadge[num_vue].y,30,20);
 
             //affichage identité personne
             if (num_pers != -1) {
-               tll->labelB[num_vue][num_badge_i]->setToolTip("<img src=':" + tll->photo[num_pers] + "'/>"
+               pDynamique.labelB[num_vue][num_badge_i]->setToolTip("<img src=':" + tll->photo[num_pers] + "'/>"
                                                              +" Badge "+ QString::number(num_badge_i) +" de : "
                                                              + tll->nom[num_pers] +" "  + tll->prenom[num_pers]
                                                              +QString::fromUtf8(" Société : ")+ tll->societe[num_pers]);
 
             } else { //badge pas affecté
-                tll->labelB[num_vue][num_badge_i]->setToolTip(QString::fromUtf8("Badge non affecté à une personne"));
+                pDynamique.labelB[num_vue][num_badge_i]->setToolTip(QString::fromUtf8("Badge non affecté à une personne"));
             }
 
         } //fin for
@@ -794,7 +818,7 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
     qDebug() << "ajoutLecteur : " << numLecteur << num_vue << x << y;
     //se placer sur le bon onglet
     QWidget *onglet;
-    onglet = pDynamique->onglet[num_vue];
+    onglet = pDynamique.onglet[num_vue];
     //test valeur
     //qDebug() << "valeur pointeur onglet" << onglet << endl;
 
@@ -823,7 +847,7 @@ void Ihm::ajoutLecteur(int numLecteur, int num_vue, int x, int y, ClientConnecti
     ui->txtAlarme->setTextCursor(curseur); // Application du curseur à la zone de texte
 
     //sauvegarde du pointeur du label du lecteur //PLUS besoin
-    //pDynamique->labelL[num_vue][numLecteur] = labelL;
+    //pDynamique.labelL[num_vue][numLecteur] = labelL;
 
     //en cas de suppression
     connect(cCL, SIGNAL(sig_disconnected()), labelL, SLOT(clear()));
@@ -841,8 +865,8 @@ void Ihm::ajoutOnglet(int num_vue, QString legende, QString image)
     ui->tabWidget->insertTab(num_vue, pContenuOnglet, legende);
 
     //sauvegarde du pointeur onglet
-    pDynamique->onglet[num_vue] = pContenuOnglet;
-  //  qDebug() << "valeur dans la classe" << pDynamique->onglet[num_vue] << endl;
+    pDynamique.onglet[num_vue] = pContenuOnglet;
+  //  qDebug() << "valeur dans la classe" << pDynamique.onglet[num_vue] << endl;
 
 }
 ///////////////////////////////////////////////////////////

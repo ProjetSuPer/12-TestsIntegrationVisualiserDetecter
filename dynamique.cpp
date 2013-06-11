@@ -3,4 +3,5 @@
 Dynamique::Dynamique(QObject *parent) :
     QObject(parent)
 {
+
 }

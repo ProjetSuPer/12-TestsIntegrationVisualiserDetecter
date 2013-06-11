@@ -53,8 +53,8 @@ private:
     bool sensDePassage(T_ListeLabel *tll);  //sens de passage
     void calculerDroite(int sens, T_Point pointA, T_Point pointB, T_Point *pointF);    //calcul position exacte
 
-    //pointeur sur la classe Dynamique (sauvegarde de l'affichage dynamique)
-    Dynamique *pDynamique;
+    // la classe Dynamique (sauvegarde de l'affichage dynamique)
+    Dynamique pDynamique;
     //pointeur sur la classe BDD
     Bdd *pBdd;
     Server* _server;
