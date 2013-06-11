@@ -91,6 +91,8 @@ private slots:
     void hommeEnDanger(QString &);
     //perte de réception
     void perteReception(int, int, T_ListeLabel *);
+    //nettoyer Alarme
+    void clearAlarme();
 
     void addressLineEdit_textEdited(QString);
     void onPushButton_clicked();

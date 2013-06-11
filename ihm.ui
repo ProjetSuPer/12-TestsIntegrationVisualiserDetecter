@@ -127,6 +127,22 @@
       <string>anciennes</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="btClear">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>45</y>
+       <width>65</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Nettoyer</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
